@@ -1,0 +1,14 @@
+.account{
+    width: 6rem;
+    padding: 0.5rem;
+    font-size: 0.95rem;
+}
+
+.about-company > img{
+    height: 100%;
+    width: 40%;
+}
+
+form.search > *{
+    width: 30rem;
+}
