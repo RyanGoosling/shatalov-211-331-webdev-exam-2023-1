@@ -57,49 +57,34 @@
         <section class="route mt-5 container">
             <h2 id="route-list" data-bs-spy="scroll">Список пешеходных маршрутов</h2>
             <form class="d-flex search mt-4">
-                <input class="form-control me-2" type="search" placeholder="Поиск по названию" aria-label="Search">
+                <input class="form-control me-2 search-name" type="search" placeholder="Поиск по названию" aria-label="Search">
                 <select class="form-select" aria-label="Default select example">
                     <option selected>Основной объект</option>
                     <option value="no choise">Не выбрано</option>
                 </select>
             </form>
-            <table class="table route-table">
+            <table class="table route-table mt-3">
                 <thead>
                     <tr>
                         <th scope="col">Название</th>
                         <th scope="col">Описание</th>
                         <th scope="col">Основные объекты</th>
-                        <th scope="col">№</th>
+                        <th scope="col"></th>
                     </tr>
                 </thead>
                 <tbody class="route-tbody">
                     <tr>
-                        <th scope="row">Для всей семьи: планетрий, зоопарк и музеи</th>
-                        <td>Познавательный маршрут для исследователей живой природы в центре Москвы. Три музея, зоопарк
-                            и планетарий.</td>
-                        <td>От биологического музея им.Тимирязева до Дарвиновского музея: Московский зоопарк,
-                            Б.Грузинская, 1 - Планетарий, Садовая-Кудринская, 5, стр. 1 - Нескучный сад, Ленинский
-                            просп. - Минералогический музей им.Ферсмана, Ленинский просп., 18, корп. 2 - Даниловский
-                            рынок, Мытная, 74</td>
+                        <th scope="row"></th>
+                        <td>Загрузка.</td>
+                        <td>Пожалуйста, ожидайте.</td>
                         <td class="align-middle"><button class="btn btn-info text-light">Выбрать</button></td>
-                    </tr>
-                    <tr>
-                        <th scope="row" class="name">2</th>
-                        <td class="desc">Jacob</td>
-                        <td class="main-object">Thornton</td>
-                        <td class="align-middle"><button class="btn btn-info text-light">Выбрать</button></td>
-                    </tr>
-                    <tr>
-                        <th scope="row">3</th>
-                        <td colspan="2">Larry the Bird</td>
-                        <td>@twitter</td>
                     </tr>
                 </tbody>
             </table>
 
             <ul class="pagination justify-content-center">
-                <li class="page-item v-hidden to-start">
-                    <a class="page-link" aria-label="Previous" href="#route-list">
+                <li class="page-item to-start">
+                    <a class="page-link disabled" aria-label="Previous" href="#route-list">
                         В начало
                     </a>
                 </li>
@@ -110,7 +95,7 @@
                 <li class="page-item"><a class="page-link" href="#route-list">5</a></li>
                 <li class="page-item to-end">
                     <a class="page-link" aria-label="Next" href="#route-list">
-                        <span aria-hidden="true">В конец</span>
+                        В конец
                     </a>
                 </li>
             </ul>
