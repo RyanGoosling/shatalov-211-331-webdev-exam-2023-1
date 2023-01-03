@@ -12,3 +12,7 @@
 form.search > *{
     width: 30rem;
 }
+
+.v-hidden {
+    visibility: hidden;
+}
