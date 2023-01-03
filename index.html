@@ -58,11 +58,11 @@
             <h2 id="route-list" data-bs-spy="scroll">Список пешеходных маршрутов</h2>
             <form class="d-flex search mt-4">
                 <input class="form-control me-2 search-name" type="search" placeholder="Поиск по названию" aria-label="Search">
-                <select class="form-select" aria-label="Default select example">
-                    <option selected>Основной объект</option>
-                    <option value="no choise">Не выбрано</option>
+                <select class="form-select search-object" aria-label="Default select example">
+                    <option>Не выбрано</option>
                 </select>
             </form>
+
             <table class="table route-table mt-3">
                 <thead>
                     <tr>
@@ -105,7 +105,52 @@
                     <th scope="row" class="name">2</th>
                     <td class="desc">Jacob</td>
                     <td class="main-object">Thornton</td>
-                    <td class="align-middle"><button class="btn btn-info text-light">Выбрать</button></td>
+                    <td class="align-middle"><button class="btn btn-info text-light choise-btn">Выбрать</button></td>
+                </tr>
+            </template>
+        </section>
+
+        <section class="gid my-5 container">
+            <h2 id="gid-list">Доступные гиды по маршруту <span>D</span></h2>
+            <form class="d-flex search mt-4 justify-content-between">
+                <select class="form-select search-lang me-3" aria-label="Default select example">
+                    <option>здесь будут языки</option>
+                </select>
+                <span class="d-flex align-items-center">
+                    <span style="width: 300px;">Опыт работы</span> 
+                    <input class="form-control me-2 search-from" type="search" placeholder="от" aria-label="Search">
+                    <input class="form-control me-2 search-to" type="search" placeholder="до" aria-label="Search">
+                </span>
+            </form>
+
+            <table class="table gid-table mt-3">
+                <thead>
+                    <tr>
+                        <th scope="col">Фамилия, имя</th>
+                        <th scope="col">Языки</th>
+                        <th scope="col">Опыт работы</th>
+                        <th scope="col">Стоимость услуги в час</th>
+                        <th scope="col"></th>
+                    </tr>
+                </thead>
+                <tbody class="gid-tbody">
+                    <tr>
+                        <th scope="row"></th>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td class="align-middle"></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <template id="tr-gid-template">
+                <tr>
+                    <th scope="row" class="name">2</th>
+                    <td class="lang">Jacob</td>
+                    <td class="exp">Thornton</td>
+                    <td class="price">500</td>
+                    <td class="align-middle"><button class="btn btn-info text-light choise-gid-btn">Выбрать</button></td>
                 </tr>
             </template>
 
