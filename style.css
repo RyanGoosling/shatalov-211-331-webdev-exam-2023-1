@@ -9,10 +9,17 @@
     width: 40%;
 }
 
-form.search > *{
+/* form.search > *{
     width: 30rem;
-}
+} */
 
 .v-hidden {
     visibility: hidden;
+}
+
+.search-object > option {
+    width: 100px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
