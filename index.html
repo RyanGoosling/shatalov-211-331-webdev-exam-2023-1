@@ -59,7 +59,8 @@
             <form class="search mt-4">
                 <div class="row">
                     <div class="col-lg-4">
-                        <input class="form-control me-2 search-name" type="search" placeholder="Поиск по названию" aria-label="Search">
+                        <input class="form-control me-2 search-name" type="search" placeholder="Поиск по названию"
+                            aria-label="Search">
                     </div>
                     <div class="col-lg-8 mt-3 mt-lg-0">
                         <select class="form-select search-object" aria-label="Default select example">
@@ -127,9 +128,11 @@
                     </div>
                     <div class="col-lg-6">
                         <span class="d-flex align-items-center mt-3 mt-lg-0">
-                            <span style="width: 300px;">Опыт работы</span> 
-                            <input class="form-control me-2 search-from" type="search" placeholder="от" aria-label="Search">
-                            <input class="form-control me-2 search-to" type="search" placeholder="до" aria-label="Search">
+                            <span style="width: 300px;">Опыт работы</span>
+                            <input class="form-control me-2 search-from" type="search" placeholder="от"
+                                aria-label="Search">
+                            <input class="form-control me-2 search-to" type="search" placeholder="до"
+                                aria-label="Search">
                         </span>
                     </div>
                 </div>
@@ -162,14 +165,107 @@
                     <td class="lang">Jacob</td>
                     <td class="exp">Thornton</td>
                     <td class="price">500</td>
-                    <td class="align-middle"><button class="btn btn-info text-light choise-gid-btn">Выбрать</button></td>
+                    <td class="align-middle"><button class="btn btn-info text-light choise-gid-btn">Выбрать</button>
+                    </td>
                 </tr>
             </template>
 
         </section>
+
+        <section class="create-order container d-flex">
+            <button class="btn btn-secondary ms-auto fs-3 text-light disabled create-order-btn"
+                data-bs-target="#new-order" data-bs-toggle="modal">Оформить заявку</button>
+        </section>
+
+        <div class="modal fade" id="new-order" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2 class="modal-title fs-5" id="exampleModalLabel">Оформление заявки</h2>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>ФИО гида: <span class="guide-name">Алла</span></p>
+                        <p>Название маршрута: <span class="route-name">Аллея</span></p>
+                        <form class="needs-validation was-validated new-order-form" novalidate>
+                            <div class="row mb-3">
+                                <div class="col-md-3">
+                                    <label class="col-form-label" for="date-excursion">Дата экскурсии:</label>
+                                    <div style="width: 150px;">
+                                        <input class="form-control" type="date" name="date" id="date-excursion" value="2023-01-01"
+                                            required>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="col-form-label" for="time-excursion">Время начала:</label>
+                                    <div style="width: 150px;">
+                                        <input class="form-control" type="time" name="time" id="time-excursion" value="14:00"
+                                            min="09:00" max="23:00" step="1800" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="col-form-label" for="duration-excursion">Длительность
+                                        экскурсии:</label>
+                                    <div style="width: 150px;">
+                                        <select class="form-select" name="duration" id="duration-excursion">
+                                            <option>1 час</option>
+                                            <option>2 часа</option>
+                                            <option>3 часа</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="col-form-label" for="persons-excursion">Количество человек: </label>
+                                    <div style="width: 150px;">
+                                        <input class="form-control" type="number" name="persons" id="persons-excursion" value="1"
+                                            min="1" max="20" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <input type="hidden" name="guide_id">
+                            <input type="hidden" name="route_id">
+                            <div class="row mb-3">
+                                <h6>Дополнительные опции:</h6>
+                                <div class="col-md-6">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="" id="option-1">
+                                        <label class="form-check-label" for="option-1">
+                                            Скидка для школьников и студентов
+                                        </label>
+                                        <p class="text-secondary">Скидка 15%</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="" id="option-2">
+                                        <label class="form-check-label" for="option-2">
+                                            Сувенирная продукция
+                                        </label>
+                                        <p class="text-secondary">Увеличение стоимости на 500 &#8381;</p>
+                                    </div>
+                                </div>
+                                <!-- 1. Использовать скидку для школьников и студентов. При выборе чекбокса стоимость
+                                    уменьшается на 15%.
+                                    5. Тематические сувениры для посетителей. Стоимость увеличивается на 500 рублей для
+                                    каждого посетителя -->
+                                <div>
+                                    <h5>Итоговая стоимость: <span class="total-price">0</span>&#8381;</h5>
+                                </div>
+                            </div>
+                        </form>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                            <button type="button" class="btn btn-primary create-new-task"
+                                data-bs-dismiss="modal">Отправить</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </main>
 
-    <footer class="bg-info d-flex justify-content-center py-2">
+    <footer class="bg-info d-flex justify-content-center py-2, mt-3">
         <span class="fs-5 text-light">&COPY; ООО «Вечерняя прогулка»</span>
     </footer>
 

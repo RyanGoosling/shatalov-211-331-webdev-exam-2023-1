@@ -159,7 +159,7 @@ function searchNameHandler(event) {
     }
     else {
         for (let i = 0; i < mainRoutes.length; i++) {
-            if (mainRoutes[i].name.includes(event.target.value))
+            if (mainRoutes[i].name.toLowerCase().includes(event.target.value.toLowerCase()))
                 searchRoute.push(mainRoutes[i]);
         }
         routes = searchRoute;
@@ -187,11 +187,26 @@ function choiceRouteHandler(event) {
     loadGid();
 }
 
-function choiceGidHandler(event) {
+function manageOrderBtn(status = true) {
+    let createOrderBtn = document.querySelector(".create-order-btn");
+    if (status) {
+        createOrderBtn.classList.remove("disabled");
+        createOrderBtn.classList.remove("btn-secondary");
+        createOrderBtn.classList.add("btn-primary");
+    } else {
+        createOrderBtn.classList.add("disabled");
+        createOrderBtn.classList.add("btn-secondary");
+        createOrderBtn.classList.remove("btn-primary");
+    }
+}
+
+async function choiceGidHandler(event) {
     let trGid = event.target.closest("tr");
     if (choiceGidId == trGid.id) {
         trGid.classList.remove("table-success");
         choiceGidId = 0;
+        manageOrderBtn(false);
+        return;
     }
     else if (choiceGidId != 0) {
         if (document.getElementById(choiceGidId) != null)
@@ -203,6 +218,12 @@ function choiceGidHandler(event) {
         choiceGidId = trGid.id;
         trGid.classList.add("table-success");
     }
+    manageOrderBtn(true);
+
+    let tempUrl = new URL('http://exam-2023-1-api.std-900.ist.mospolytech.ru/api/guides/?api_key=3c8ee4d3-00fb-49b5-9040-546e5c98ba1d'); //url for choice guide
+    tempUrl.pathname += choiceGidId;
+    let response = await fetch(tempUrl);
+    choiceGid = await response.json();
 }
 
 function createNewGid(gid) {
@@ -271,10 +292,10 @@ function searchGid() {
 
     if (langGid.value != 'Не выбрано')
         gids = gids.filter(gid => gid.language.includes(langGid.value));
-    
+
     if (expFromGid.value != '')
         gids = gids.filter(gid => gid.workExperience >= expFromGid.value);
-    
+
     if (expToGid.value != '')
         gids = gids.filter(gid => gid.workExperience <= expToGid.value);
 
@@ -285,15 +306,81 @@ function searchGidHandler(event) {
     searchGid();
 }
 
+async function isThisDayOff(day) {
+    let urlDay = new URL('https://isdayoff.ru/');
+    urlDay.pathname += day;
+    let response = await fetch(urlDay);
+    let isdayoff = await response.json();
+    return isdayoff; // 1 - day off
+}
+
+async function updatePrice() {
+    let spanPrice = document.querySelector('.total-price');
+
+    let date = document.getElementById('date-excursion').value;
+    let time = document.getElementById('time-excursion').value;
+    let duration = document.getElementById('duration-excursion').value[0]; //n час
+    let persons = document.getElementById('persons-excursion').value;
+    let optionFirst = document.getElementById('option-1').checked ? 0.85 : 1;
+    let optionSecond = document.getElementById('option-2').checked ? 500 : 0;
+
+    date = await isThisDayOff(date) == 1 ? 1.5 : 1;
+    time = time <= '12:00' ? 400 :
+        time >= '20:00' ? 1000 : 0;
+    duration = Number(duration);
+    optionSecond *= persons;
+    persons = persons < 5 ? 0 :
+        persons < 10 ? 1000 : 1500;
+
+    //console.log(duration, date, time, optionSecond, persons, optionFirst);
+
+    let price = (choiceGid.pricePerHour * duration * date + time + optionSecond + persons) * optionFirst;
+    spanPrice.innerText = price;
+}
+
+function newOrderHandler(event) {
+    event.target.querySelector(".guide-name").innerText = choiceGid.name;
+    event.target.querySelector(".route-name").innerText = choiceRoute.name;
+
+    updatePrice();
+}
+
+function inputOrderHandler(event) {
+    let formOrder = event.target.closest(".new-order-form");
+    if (event.target.tagName == 'INPUT' || event.target.tagName == 'SELECT')
+        if (formOrder.checkValidity())
+            updatePrice();
+}
+
+// Price = guideServiceCost × hoursNumber × isThisDayOff + isItMorning + isItEvening +
+// numberOfVisitors,
+// где:
+// ● guideServiceCost – стоимость услуг гида за один час;
+// ● hoursNumber – длительность экскурсии в часах;
+// ● isThisDayOff – множитель, отвечающий за повышение стоимости в праздничные и
+// выходные дни. Для будней3 равен 1, для праздничных и выходных дней (сб, вс) – 1,5;
+// ● isItMorning – надбавка за раннее время экскурсии. Для экскурсий, которые начинаются
+// с 9 до 12 часов, равна 400 рублей, для остальных – 0;
+// ● isItEvening – надбавка за вечернее время экскурсии. Для экскурсий, которые
+// начинаются с 20 до 23 часов, равна 1000 рублей, для остальных – 0;
+// ● numberOfVisitors - надбавка за количество посетителей экскурсии:
+// ○ от 1 до 5 человек – 0 рублей,
+// ○ от 5 до 10 – 1000 рублей,
+// ○ от 10 до 20 – 1500 рублей.
+
+
 window.onload = async function () {
     await loadRoute();
     updateRouteTable(1);
     document.querySelector(".pagination").addEventListener("click", paginationHandler);
-    
+
     document.querySelector(".search-name").addEventListener("input", searchNameHandler);
     document.querySelector(".search-object").addEventListener("change", selectRouteHandler);
 
     document.querySelector(".search-lang").addEventListener("change", searchGidHandler);
     document.querySelector(".search-from").addEventListener("input", searchGidHandler);
     document.querySelector(".search-to").addEventListener("input", searchGidHandler);
+
+    document.getElementById("new-order").addEventListener("show.bs.modal", newOrderHandler);
+    document.querySelector(".new-order-form").addEventListener("change", inputOrderHandler);
 }
