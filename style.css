@@ -9,17 +9,26 @@
     width: 40%;
 }
 
-/* form.search > *{
-    width: 30rem;
-} */
-
-.v-hidden {
-    visibility: hidden;
+.heading-line {
+    height: 1px;
+    background-color: lightgray;
 }
 
-.search-object > option {
-    width: 100px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+.table-success {
+    background-color: #d1e7dd;
+}
+
+.main-object {
+    color: gray;
+}
+
+.gid-table {
+    gap: 0.5rem;
+}
+
+.gid-div {
+    padding: 10px;
+    border: 1px solid lightgray;
+    border-radius: 10px;
+    min-width: 250px;
 }

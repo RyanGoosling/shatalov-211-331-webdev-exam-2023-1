@@ -33,7 +33,7 @@
 
     <main>
         <section class="about-company d-flex mt-3">
-            <div class="container">
+            <div class="container-lg">
                 <div class="row">
                     <div class="col-lg-7 d-flex flex-column justify-content-center">
                         <h2>О нас</h2>
@@ -54,7 +54,7 @@
             </div>
         </section>
 
-        <section class="route mt-5 container">
+        <section class="route mt-5 container-lg">
             <h2 id="route-list" data-bs-spy="scroll">Список пешеходных маршрутов</h2>
             <form class="search mt-4">
                 <div class="row">
@@ -70,7 +70,10 @@
                 </div>
             </form>
 
-            <table class="table route-table mt-3">
+            <div class="route-table mt-3">
+
+            </div>
+            <!-- <table class="table route-table mt-3">
                 <thead>
                     <tr>
                         <th scope="col">Название</th>
@@ -87,9 +90,9 @@
                         <td class="align-middle"><button class="btn btn-info text-light">Выбрать</button></td>
                     </tr>
                 </tbody>
-            </table>
+            </table> -->
 
-            <ul class="pagination justify-content-center">
+            <ul class="pagination justify-content-center mt-3">
                 <li class="page-item to-start">
                     <a class="page-link disabled" aria-label="Previous" href="#route-list">
                         В начало
@@ -115,9 +118,18 @@
                     <td class="align-middle"><button class="btn btn-info text-light choise-btn">Выбрать</button></td>
                 </tr>
             </template>
+            <template id="div-template">
+                <div>
+                    <h4 class="name">Нескучный сад</h4>
+                    <p class="desc">Нескучный сад – старейший парк Москвы. В середине XVIII века здесь, в своём имении, известный московский миллионер Прокопий Демидов построил дворец, получивший название «Демидовский». На крутом берегу Москвы-реки он устроил насыпные террасы и разбил огромный сад с собранием более 2000 видов растений. При следующем владельце, графе А. Г. Орлове-Чесменском, на территории усадьбы появился целый ряд павильонов, беседок и различных садовых «затей», многие из которых сохранились до наших дней. Когда усадьбу купил император Николай I, он дал владению название Нескучный сад. Именно так называлось имение, принадлежавшее князю Н. Ю. Трубецкому, с большим парком, с зелеными лабиринтами, диковинными беседками и оранжереями.</p>
+                    <p class="main-object">ЦПКиО им. Горького - Зеленый театр (Театр С. Намина)- Нескучный сад</p>
+                    <button class="btn btn-info text-light choise-btn">Выбрать</button>
+                    <div class="heading-line mt-3"></div>
+                </div>
+            </template>
         </section>
 
-        <section class="gid my-5 container">
+        <section class="gid my-5 container-lg">
             <h2 id="gid-list">Доступные гиды по маршруту <span>...</span></h2>
             <form class="search mt-4">
                 <div class="row">
@@ -138,7 +150,10 @@
                 </div>
             </form>
 
-            <table class="table gid-table mt-3">
+            <div class="gid-table mt-3 d-flex flex-wrap justify-content-evenly">
+                
+            </div>
+            <!-- <table class="table gid-table mt-3">
                 <thead>
                     <tr>
                         <th scope="col">Фамилия, имя</th>
@@ -157,7 +172,7 @@
                         <td class="align-middle"></td>
                     </tr>
                 </tbody>
-            </table>
+            </table> -->
 
             <template id="tr-gid-template">
                 <tr>
@@ -168,6 +183,15 @@
                     <td class="align-middle"><button class="btn btn-info text-light choise-gid-btn">Выбрать</button>
                     </td>
                 </tr>
+            </template>
+            <template id="div-gid-template">
+                <div class="gid-div">
+                    <p class="name fw-bold mb-2">Maria Price</p>
+                    <p class="my-2">Языки: <span class="lang">Uzbek</span></p>
+                    <p class="my-2">Опыт работы: <span class="exp">7</span></p>
+                    <p class="my-2">Стоимость услуги в час: <span class="price">3786</span></p>
+                    <button class="btn btn-info text-light choise-gid-btn">Выбрать</button>
+                </div>
             </template>
 
         </section>
@@ -241,7 +265,7 @@
                                         <label class="form-check-label" for="option-2">
                                             Сувенирная продукция
                                         </label>
-                                        <p class="text-secondary">Увеличение стоимости на 500 &#8381;</p>
+                                        <p class="text-secondary">Увеличение стоимости на 500&#8381; за каждого посетителя</p>
                                     </div>
                                 </div>
                                 <!-- 1. Использовать скидку для школьников и студентов. При выборе чекбокса стоимость
@@ -255,7 +279,7 @@
                         </form>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
-                            <button type="button" class="btn btn-primary create-new-task"
+                            <button type="button" class="btn btn-primary create-new-order disabled"
                                 data-bs-dismiss="modal">Отправить</button>
                         </div>
                     </div>

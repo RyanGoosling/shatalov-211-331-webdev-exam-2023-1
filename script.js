@@ -8,7 +8,9 @@ let urlGid = new URL("http://exam-2023-1-api.std-900.ist.mospolytech.ru/api/rout
 let mainRoutes, routes;
 let currentPage = document.querySelector(".active").innerText;
 let trRouteTemplate = document.getElementById("tr-template");
+let divRouteTemplate = document.getElementById("div-template");
 let trGidTemplate = document.getElementById("tr-gid-template");
+let divGidTemplate = document.getElementById("div-gid-template");
 let choiceRouteId = 0, choiceGidId = 0;
 let mainGids, gids;
 let choiceRoute, choiceGid;
@@ -26,6 +28,19 @@ function createNewTr(oneRoute) {
     return trRoute;
 }
 
+function createNewDiv(oneRoute) {
+    let divRoute = divRouteTemplate.content.firstElementChild.cloneNode(true);
+    divRoute.id = oneRoute.id;
+    let name = divRoute.querySelector(".name");
+    name.innerHTML = oneRoute.name;
+    let desc = divRoute.querySelector(".desc");
+    desc.innerHTML = oneRoute.description;
+    let mainObject = divRoute.querySelector(".main-object");
+    mainObject.innerHTML = oneRoute.mainObject;
+    divRoute.querySelector("button").addEventListener("click", choiceRouteHandler);
+
+    return divRoute;
+}
 
 //download main routes
 async function loadRoute() {
@@ -35,37 +50,18 @@ async function loadRoute() {
     routes = mainRoutes;
 }
 
-async function loadGid() {
-    if (choiceRouteId == 0) {
-        mainGids = [];
-        gids = [];
-    }
-    else {
-        urlGid.pathname = `/api/routes/${choiceRouteId}`;
-        let response = await fetch(urlGid);
-        choiceRoute = await response.json();
-
-        urlGid.pathname += "/guides";
-        response = await fetch(urlGid);
-        let gidList = await response.json();
-
-        mainGids = gidList;
-        gids = mainGids;
-    }
-
-    updateGidTable();
-}
-
 function updateRouteTable(page, makeSelectBool = true) {
-    let bodyTable = document.querySelector('.route-tbody');
+    // let bodyTable = document.querySelector('.route-tbody');
+    let bodyTable = document.querySelector('.route-table');
     bodyTable.innerHTML = '';
 
     let start = (page - 1) * 10;
     let end = Math.min(routes.length, start + 10);
     for (let i = start; i < end; i++) {
-        let trRoute = createNewTr(routes[i]);
-        trRoute.children[3].firstChild.addEventListener("click", choiceRouteHandler);
-        bodyTable.append(trRoute);
+        let divRoute = createNewDiv(routes[i]);
+        // divRoute.children[3].firstChild.addEventListener("click", choiceRouteHandler);
+        //divRoute.children[3].addEventListener("click", choiceRouteHandler);
+        bodyTable.append(divRoute);
     }
 
     if (makeSelectBool) {
@@ -167,8 +163,24 @@ function searchNameHandler(event) {
     makePagination('1');
 }
 
+function selectRouteHandler(event) {
+    let searchRoute = [];
+    if (event.target.value == 'Не выбрано') {
+        routes = mainRoutes;
+    }
+    else {
+        for (let i = 0; i < mainRoutes.length; i++) {
+            if (mainRoutes[i].mainObject.includes(event.target.value))
+                searchRoute.push(mainRoutes[i]);
+        }
+        routes = searchRoute;
+    }
+    makePagination('1', false);
+}
+
 function choiceRouteHandler(event) {
-    let trRoute = event.target.closest("tr");
+    // let trRoute = event.target.closest("tr");
+    let trRoute = event.target.closest("div");
     if (choiceRouteId == trRoute.id) {
         trRoute.classList.remove("table-success");
         choiceRouteId = 0;
@@ -187,6 +199,71 @@ function choiceRouteHandler(event) {
     loadGid();
 }
 
+async function loadGid() {
+    if (choiceRouteId == 0) {
+        mainGids = [];
+        gids = [];
+    }
+    else {
+        urlGid.pathname = `/api/routes/${choiceRouteId}`;
+        let response = await fetch(urlGid);
+        choiceRoute = await response.json();
+
+        urlGid.pathname += "/guides";
+        response = await fetch(urlGid);
+        let gidList = await response.json();
+
+        mainGids = gidList;
+        gids = mainGids;
+    }
+
+    updateGidTable();
+}
+
+function createNewGid(gid) {
+    let trGid = divGidTemplate.content.firstElementChild.cloneNode(true);
+    trGid.id = gid.id;
+    let name = trGid.querySelector(".name");
+    name.innerHTML = gid.name;
+    let lang = trGid.querySelector(".lang");
+    lang.innerHTML = gid.language;
+    let exp = trGid.querySelector(".exp");
+    exp.innerHTML = gid.workExperience;
+    let price = trGid.querySelector(".price");
+    price.innerHTML = gid.pricePerHour;
+    trGid.querySelector("button").addEventListener("click", choiceGidHandler);
+
+    return trGid;
+}
+
+function updateGidTable(makeSelectBool = true) {
+    document.querySelector("#gid-list > span").innerText = choiceRoute.name;
+
+    let selectLang = document.querySelector(".search-lang");
+
+    if (makeSelectBool) {
+        selectLang.innerHTML = '';
+        let optionLang = document.createElement('option');
+        optionLang.innerHTML = 'Не выбрано';
+        selectLang.append(optionLang);
+    }
+
+    let bodyTable = document.querySelector('.gid-table');
+    bodyTable.innerHTML = '';
+    for (let i = 0; i < gids.length; i++) {
+        let trGid = createNewGid(gids[i]);
+        //trGid.children[4].firstChild.addEventListener("click", choiceGidHandler);
+        bodyTable.append(trGid);
+
+        if (makeSelectBool) {
+            let optionLang = document.createElement('option');//update select language
+            optionLang.innerHTML = gids[i].language;
+            if (!selectLang.innerText.includes(gids[i].language))
+                selectLang.append(optionLang);
+        }
+    }
+}
+
 function manageOrderBtn(status = true) {
     let createOrderBtn = document.querySelector(".create-order-btn");
     if (status) {
@@ -201,7 +278,7 @@ function manageOrderBtn(status = true) {
 }
 
 async function choiceGidHandler(event) {
-    let trGid = event.target.closest("tr");
+    let trGid = event.target.closest("div");
     if (choiceGidId == trGid.id) {
         trGid.classList.remove("table-success");
         choiceGidId = 0;
@@ -224,64 +301,6 @@ async function choiceGidHandler(event) {
     tempUrl.pathname += choiceGidId;
     let response = await fetch(tempUrl);
     choiceGid = await response.json();
-}
-
-function createNewGid(gid) {
-    let trGid = trGidTemplate.content.firstElementChild.cloneNode(true);
-    trGid.id = gid.id;
-    let name = trGid.querySelector(".name");
-    name.innerHTML = gid.name;
-    let lang = trGid.querySelector(".lang");
-    lang.innerHTML = gid.language;
-    let exp = trGid.querySelector(".exp");
-    exp.innerHTML = gid.workExperience;
-    let price = trGid.querySelector(".price");
-    price.innerHTML = gid.pricePerHour;
-
-    return trGid;
-}
-
-function updateGidTable(makeSelectBool = true) {
-    document.querySelector("#gid-list > span").innerText = choiceRoute.name;
-
-    let selectLang = document.querySelector(".search-lang");
-
-    if (makeSelectBool) {
-        selectLang.innerHTML = '';
-        let optionLang = document.createElement('option');
-        optionLang.innerHTML = 'Не выбрано';
-        selectLang.append(optionLang);
-    }
-
-    let bodyTable = document.querySelector('.gid-tbody');
-    bodyTable.innerHTML = '';
-    for (let i = 0; i < gids.length; i++) {
-        let trGid = createNewGid(gids[i]);
-        trGid.children[4].firstChild.addEventListener("click", choiceGidHandler);
-        bodyTable.append(trGid);
-
-        if (makeSelectBool) {
-            let optionLang = document.createElement('option');//update select language
-            optionLang.innerHTML = gids[i].language;
-            if (!selectLang.innerText.includes(gids[i].language))
-                selectLang.append(optionLang);
-        }
-    }
-}
-
-function selectRouteHandler(event) {
-    let searchRoute = [];
-    if (event.target.value == 'Не выбрано') {
-        routes = mainRoutes;
-    }
-    else {
-        for (let i = 0; i < mainRoutes.length; i++) {
-            if (mainRoutes[i].mainObject.includes(event.target.value))
-                searchRoute.push(mainRoutes[i]);
-        }
-        routes = searchRoute;
-    }
-    makePagination('1', false);
 }
 
 function searchGid() {
@@ -338,18 +357,30 @@ async function updatePrice() {
     spanPrice.innerText = price;
 }
 
+function manageSubmitBtn() {
+    let formOrder = document.querySelector(".new-order-form");
+    let submitBtn = document.querySelector("button.create-new-order");
+    if (formOrder.checkValidity())
+        submitBtn.classList.remove("disabled");
+    else 
+        submitBtn.classList.add("disabled");
+}
+
 function newOrderHandler(event) {
     event.target.querySelector(".guide-name").innerText = choiceGid.name;
     event.target.querySelector(".route-name").innerText = choiceRoute.name;
-
+    manageSubmitBtn();
     updatePrice();
 }
 
-function inputOrderHandler(event) {
+function inputsOrderHandler(event) {
     let formOrder = event.target.closest(".new-order-form");
-    if (event.target.tagName == 'INPUT' || event.target.tagName == 'SELECT')
+    if (event.target.tagName == 'INPUT' || event.target.tagName == 'SELECT') {
         if (formOrder.checkValidity())
             updatePrice();
+        manageSubmitBtn();
+    }
+
 }
 
 // Price = guideServiceCost × hoursNumber × isThisDayOff + isItMorning + isItEvening +
@@ -382,5 +413,5 @@ window.onload = async function () {
     document.querySelector(".search-to").addEventListener("input", searchGidHandler);
 
     document.getElementById("new-order").addEventListener("show.bs.modal", newOrderHandler);
-    document.querySelector(".new-order-form").addEventListener("change", inputOrderHandler);
+    document.querySelector(".new-order-form").addEventListener("change", inputsOrderHandler);
 }
