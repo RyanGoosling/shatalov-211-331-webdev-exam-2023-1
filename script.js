@@ -5,6 +5,7 @@
 
 let urlRoute = new URL("http://exam-2023-1-api.std-900.ist.mospolytech.ru/api/routes?api_key=3c8ee4d3-00fb-49b5-9040-546e5c98ba1d");
 let urlGid = new URL("http://exam-2023-1-api.std-900.ist.mospolytech.ru/api/routes/{id-маршрута}/guides?api_key=3c8ee4d3-00fb-49b5-9040-546e5c98ba1d");
+let urlOrder = new URL("http://exam-2023-1-api.std-900.ist.mospolytech.ru/api/orders?api_key=3c8ee4d3-00fb-49b5-9040-546e5c98ba1d");
 let mainRoutes, routes;
 let currentPage = document.querySelector(".active").innerText;
 let trRouteTemplate = document.getElementById("tr-template");
@@ -303,7 +304,7 @@ async function choiceGidHandler(event) {
     choiceGid = await response.json();
 }
 
-function searchGid() {
+function searchGidHandler(event) {
     let langGid = document.querySelector(".search-lang");
     let expFromGid = document.querySelector(".search-from");
     let expToGid = document.querySelector(".search-to");
@@ -319,10 +320,6 @@ function searchGid() {
         gids = gids.filter(gid => gid.workExperience <= expToGid.value);
 
     updateGidTable(false);
-}
-
-function searchGidHandler(event) {
-    searchGid();
 }
 
 async function isThisDayOff(day) {
@@ -351,10 +348,10 @@ async function updatePrice() {
     persons = persons < 5 ? 0 :
         persons < 10 ? 1000 : 1500;
 
-    //console.log(duration, date, time, optionSecond, persons, optionFirst);
+    console.log(duration, date, time, optionSecond, persons, optionFirst);
 
     let price = (choiceGid.pricePerHour * duration * date + time + optionSecond + persons) * optionFirst;
-    spanPrice.innerText = price;
+    spanPrice.innerText = Math.round(price);
 }
 
 function manageSubmitBtn() {
@@ -362,13 +359,15 @@ function manageSubmitBtn() {
     let submitBtn = document.querySelector("button.create-new-order");
     if (formOrder.checkValidity())
         submitBtn.classList.remove("disabled");
-    else 
+    else
         submitBtn.classList.add("disabled");
 }
 
-function newOrderHandler(event) {
+function showNewOrderHandler(event) {
     event.target.querySelector(".guide-name").innerText = choiceGid.name;
     event.target.querySelector(".route-name").innerText = choiceRoute.name;
+    event.target.querySelector("#guide-id").value = choiceGid.id;
+    event.target.querySelector("#route-id").value = choiceRoute.id;
     manageSubmitBtn();
     updatePrice();
 }
@@ -399,6 +398,54 @@ function inputsOrderHandler(event) {
 // ○ от 5 до 10 – 1000 рублей,
 // ○ от 10 до 20 – 1500 рублей.
 
+function alertOrder(response) {
+    let sectionAlert = document.querySelector(".alerts");
+    let alertTemplate = document.getElementById('alert-template');
+    let divAlert = alertTemplate.content.firstElementChild.cloneNode(true);
+    let textAlert = divAlert.querySelector(".alert-text");
+    if (response.error == null) {
+        divAlert.classList.add("alert-success");
+        textAlert.innerText += "Заявка успешно создана!";
+    } else {
+        divAlert.classList.add("alert-danger");
+        textAlert.innerText += response.error;
+    }
+    sectionAlert.append(divAlert);
+}
+
+let parsResponse;
+
+async function newOrderHandler(event) {
+    let modalWindow = event.target.closest(".modal");
+    let formInputs = modalWindow.querySelector("form").elements;
+    let route_id = formInputs["route_id"].value;
+    let guide_id = formInputs["guide_id"].value;
+    let date = formInputs["date"].value;
+    let time = formInputs["time"].value;
+    let duration = formInputs["duration"].value[0];
+    let persons = formInputs["persons"].value;
+    let optionFirst = formInputs["optionFirst"].checked ? 1 : 0;
+    let optionSecond = formInputs["optionSecond"].checked ? 1 : 0;
+    let price = document.querySelector('.total-price').innerText;
+
+    let orderData = new FormData();
+    orderData.append('route_id', route_id);
+    orderData.append('guide_id', guide_id);
+    orderData.append('date', date);
+    orderData.append('time', time);
+    orderData.append('duration', Number(duration));
+    orderData.append('persons', persons);
+    orderData.append('optionFirst', optionFirst);
+    orderData.append('optionSecond', optionSecond); 
+    orderData.append('price', price);
+
+    let response = await fetch(urlOrder, {method: 'POST', body: orderData});
+    parsResponse = await response.json();
+
+    modalWindow.querySelector('form').reset();
+    alertOrder(parsResponse);
+}
+
 
 window.onload = async function () {
     await loadRoute();
@@ -412,6 +459,8 @@ window.onload = async function () {
     document.querySelector(".search-from").addEventListener("input", searchGidHandler);
     document.querySelector(".search-to").addEventListener("input", searchGidHandler);
 
-    document.getElementById("new-order").addEventListener("show.bs.modal", newOrderHandler);
+    document.getElementById("new-order").addEventListener("show.bs.modal", showNewOrderHandler);
     document.querySelector(".new-order-form").addEventListener("change", inputsOrderHandler);
+
+    document.querySelector("button.create-new-order").addEventListener("click", newOrderHandler);
 }

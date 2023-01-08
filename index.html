@@ -121,7 +121,14 @@
             <template id="div-template">
                 <div>
                     <h4 class="name">Нескучный сад</h4>
-                    <p class="desc">Нескучный сад – старейший парк Москвы. В середине XVIII века здесь, в своём имении, известный московский миллионер Прокопий Демидов построил дворец, получивший название «Демидовский». На крутом берегу Москвы-реки он устроил насыпные террасы и разбил огромный сад с собранием более 2000 видов растений. При следующем владельце, графе А. Г. Орлове-Чесменском, на территории усадьбы появился целый ряд павильонов, беседок и различных садовых «затей», многие из которых сохранились до наших дней. Когда усадьбу купил император Николай I, он дал владению название Нескучный сад. Именно так называлось имение, принадлежавшее князю Н. Ю. Трубецкому, с большим парком, с зелеными лабиринтами, диковинными беседками и оранжереями.</p>
+                    <p class="desc">Нескучный сад – старейший парк Москвы. В середине XVIII века здесь, в своём имении,
+                        известный московский миллионер Прокопий Демидов построил дворец, получивший название
+                        «Демидовский». На крутом берегу Москвы-реки он устроил насыпные террасы и разбил огромный сад с
+                        собранием более 2000 видов растений. При следующем владельце, графе А. Г. Орлове-Чесменском, на
+                        территории усадьбы появился целый ряд павильонов, беседок и различных садовых «затей», многие из
+                        которых сохранились до наших дней. Когда усадьбу купил император Николай I, он дал владению
+                        название Нескучный сад. Именно так называлось имение, принадлежавшее князю Н. Ю. Трубецкому, с
+                        большим парком, с зелеными лабиринтами, диковинными беседками и оранжереями.</p>
                     <p class="main-object">ЦПКиО им. Горького - Зеленый театр (Театр С. Намина)- Нескучный сад</p>
                     <button class="btn btn-info text-light choise-btn">Выбрать</button>
                     <div class="heading-line mt-3"></div>
@@ -150,8 +157,8 @@
                 </div>
             </form>
 
-            <div class="gid-table mt-3 d-flex flex-wrap justify-content-evenly">
-                
+            <div class="gid-table mt-3 d-sm-flex flex-wrap justify-content-evenly">
+
             </div>
             <!-- <table class="table gid-table mt-3">
                 <thead>
@@ -196,6 +203,10 @@
 
         </section>
 
+        <section class="alerts fs-5 container-lg">
+
+        </section>
+
         <section class="create-order container d-flex">
             <button class="btn btn-secondary ms-auto fs-3 text-light disabled create-order-btn"
                 data-bs-target="#new-order" data-bs-toggle="modal">Оформить заявку</button>
@@ -216,15 +227,15 @@
                                 <div class="col-md-3">
                                     <label class="col-form-label" for="date-excursion">Дата экскурсии:</label>
                                     <div style="width: 150px;">
-                                        <input class="form-control" type="date" name="date" id="date-excursion" value="2023-01-01"
-                                            required>
+                                        <input class="form-control" type="date" name="date" id="date-excursion"
+                                            value="2023-01-20" required>
                                     </div>
                                 </div>
                                 <div class="col-md-3">
                                     <label class="col-form-label" for="time-excursion">Время начала:</label>
                                     <div style="width: 150px;">
-                                        <input class="form-control" type="time" name="time" id="time-excursion" value="14:00"
-                                            min="09:00" max="23:00" step="1800" required>
+                                        <input class="form-control" type="time" name="time" id="time-excursion"
+                                            value="14:00" min="09:00" max="23:00" step="1800" required>
                                     </div>
                                 </div>
                                 <div class="col-md-3">
@@ -241,18 +252,19 @@
                                 <div class="col-md-3">
                                     <label class="col-form-label" for="persons-excursion">Количество человек: </label>
                                     <div style="width: 150px;">
-                                        <input class="form-control" type="number" name="persons" id="persons-excursion" value="1"
-                                            min="1" max="20" required>
+                                        <input class="form-control" type="number" name="persons" id="persons-excursion"
+                                            value="1" min="1" max="20" required>
                                     </div>
                                 </div>
                             </div>
-                            <input type="hidden" name="guide_id">
-                            <input type="hidden" name="route_id">
+                            <input type="hidden" name="guide_id" id="guide-id">
+                            <input type="hidden" name="route_id" id="route-id">
                             <div class="row mb-3">
                                 <h6>Дополнительные опции:</h6>
                                 <div class="col-md-6">
                                     <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="" id="option-1">
+                                        <input class="form-check-input" type="checkbox" id="option-1"
+                                            name="optionFirst">
                                         <label class="form-check-label" for="option-1">
                                             Скидка для школьников и студентов
                                         </label>
@@ -261,11 +273,13 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="" id="option-2">
+                                        <input class="form-check-input" type="checkbox" id="option-2"
+                                            name="optionSecond">
                                         <label class="form-check-label" for="option-2">
                                             Сувенирная продукция
                                         </label>
-                                        <p class="text-secondary">Увеличение стоимости на 500&#8381; за каждого посетителя</p>
+                                        <p class="text-secondary">Увеличение стоимости на 500&#8381; за каждого
+                                            посетителя</p>
                                     </div>
                                 </div>
                                 <!-- 1. Использовать скидку для школьников и студентов. При выборе чекбокса стоимость
@@ -292,6 +306,13 @@
     <footer class="bg-info d-flex justify-content-center py-2, mt-3">
         <span class="fs-5 text-light">&COPY; ООО «Вечерняя прогулка»</span>
     </footer>
+
+    <template id="alert-template">
+        <div class="alert alert-dismissible" role="alert">
+            <span class="alert-text"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    </template>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN"
