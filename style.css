@@ -1,3 +1,7 @@
+body {
+    height: 100vh;
+}
+
 .account{
     width: 6rem;
     padding: 0.5rem;
@@ -35,4 +39,12 @@
 
 .order-inputs {
     width: 75%;
+}
+
+i {
+    cursor: pointer;
+}
+
+.order-table {
+    min-height: 276px;
 }
