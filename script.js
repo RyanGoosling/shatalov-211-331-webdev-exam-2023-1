@@ -8,26 +8,11 @@ let urlGid = new URL("http://exam-2023-1-api.std-900.ist.mospolytech.ru/api/rout
 let urlOrder = new URL("http://exam-2023-1-api.std-900.ist.mospolytech.ru/api/orders?api_key=3c8ee4d3-00fb-49b5-9040-546e5c98ba1d");
 let mainRoutes, routes;
 let currentPage = document.querySelector(".active").innerText;
-let trRouteTemplate = document.getElementById("tr-template");
 let divRouteTemplate = document.getElementById("div-template");
-let trGidTemplate = document.getElementById("tr-gid-template");
 let divGidTemplate = document.getElementById("div-gid-template");
 let choiceRouteId = 0, choiceGidId = 0;
 let mainGids, gids;
 let choiceRoute, choiceGid;
-
-function createNewTr(oneRoute) {
-    let trRoute = trRouteTemplate.content.firstElementChild.cloneNode(true);
-    trRoute.id = oneRoute.id;
-    let name = trRoute.querySelector(".name");
-    name.innerHTML = oneRoute.name;
-    let desc = trRoute.querySelector(".desc");
-    desc.innerHTML = oneRoute.description;
-    let mainObject = trRoute.querySelector(".main-object");
-    mainObject.innerHTML = oneRoute.mainObject;
-
-    return trRoute;
-}
 
 function createNewDiv(oneRoute) {
     let divRoute = divRouteTemplate.content.firstElementChild.cloneNode(true);
@@ -52,7 +37,6 @@ async function loadRoute() {
 }
 
 function updateRouteTable(page, makeSelectBool = true) {
-    // let bodyTable = document.querySelector('.route-tbody');
     let bodyTable = document.querySelector('.route-table');
     bodyTable.innerHTML = '';
 
@@ -60,8 +44,6 @@ function updateRouteTable(page, makeSelectBool = true) {
     let end = Math.min(routes.length, start + 10);
     for (let i = start; i < end; i++) {
         let divRoute = createNewDiv(routes[i]);
-        // divRoute.children[3].firstChild.addEventListener("click", choiceRouteHandler);
-        //divRoute.children[3].addEventListener("click", choiceRouteHandler);
         bodyTable.append(divRoute);
     }
 
@@ -72,7 +54,6 @@ function updateRouteTable(page, makeSelectBool = true) {
         for (let i = 0; i < routes.length; i++) {
             let optionObject = document.createElement('option');
             optionObject.innerText = routes[i].mainObject;
-            //optionObject.id = routes[i].id;
             selectObject.append(optionObject);
         }
     }
@@ -180,21 +161,20 @@ function selectRouteHandler(event) {
 }
 
 function choiceRouteHandler(event) {
-    // let trRoute = event.target.closest("tr");
-    let trRoute = event.target.closest("div");
-    if (choiceRouteId == trRoute.id) {
-        trRoute.classList.remove("table-success");
+    let divRoute = event.target.closest("div");
+    if (choiceRouteId == divRoute.id) {
+        divRoute.classList.remove("table-success");
         choiceRouteId = 0;
     }
     else if (choiceRouteId != 0) {
         if (document.getElementById(choiceRouteId) != null)
             document.getElementById(choiceRouteId).classList.remove("table-success");
-        trRoute.classList.add("table-success");
-        choiceRouteId = trRoute.id;
+        divRoute.classList.add("table-success");
+        choiceRouteId = divRoute.id;
     }
     else {
-        choiceRouteId = trRoute.id;
-        trRoute.classList.add("table-success");
+        choiceRouteId = divRoute.id;
+        divRoute.classList.add("table-success");
     }
 
     loadGid();
@@ -222,19 +202,19 @@ async function loadGid() {
 }
 
 function createNewGid(gid) {
-    let trGid = divGidTemplate.content.firstElementChild.cloneNode(true);
-    trGid.id = gid.id;
-    let name = trGid.querySelector(".name");
+    let divGid = divGidTemplate.content.firstElementChild.cloneNode(true);
+    divGid.id = gid.id;
+    let name = divGid.querySelector(".name");
     name.innerHTML = gid.name;
-    let lang = trGid.querySelector(".lang");
+    let lang = divGid.querySelector(".lang");
     lang.innerHTML = gid.language;
-    let exp = trGid.querySelector(".exp");
+    let exp = divGid.querySelector(".exp");
     exp.innerHTML = gid.workExperience;
-    let price = trGid.querySelector(".price");
+    let price = divGid.querySelector(".price");
     price.innerHTML = gid.pricePerHour;
-    trGid.querySelector("button").addEventListener("click", choiceGidHandler);
+    divGid.querySelector("button").addEventListener("click", choiceGidHandler);
 
-    return trGid;
+    return divGid;
 }
 
 function updateGidTable(makeSelectBool = true) {
@@ -252,12 +232,11 @@ function updateGidTable(makeSelectBool = true) {
     let bodyTable = document.querySelector('.gid-table');
     bodyTable.innerHTML = '';
     for (let i = 0; i < gids.length; i++) {
-        let trGid = createNewGid(gids[i]);
-        //trGid.children[4].firstChild.addEventListener("click", choiceGidHandler);
-        bodyTable.append(trGid);
+        let divGid = createNewGid(gids[i]);
+        bodyTable.append(divGid);
 
         if (makeSelectBool) {
-            let optionLang = document.createElement('option');//update select language
+            let optionLang = document.createElement('option'); //update select language
             optionLang.innerHTML = gids[i].language;
             if (!selectLang.innerText.includes(gids[i].language))
                 selectLang.append(optionLang);
@@ -279,9 +258,9 @@ function manageOrderBtn(status = true) {
 }
 
 async function choiceGidHandler(event) {
-    let trGid = event.target.closest("div");
-    if (choiceGidId == trGid.id) {
-        trGid.classList.remove("table-success");
+    let divGid = event.target.closest("div");
+    if (choiceGidId == divGid.id) {
+        divGid.classList.remove("table-success");
         choiceGidId = 0;
         manageOrderBtn(false);
         return;
@@ -289,12 +268,12 @@ async function choiceGidHandler(event) {
     else if (choiceGidId != 0) {
         if (document.getElementById(choiceGidId) != null)
             document.getElementById(choiceGidId).classList.remove("table-success");
-        trGid.classList.add("table-success");
-        choiceGidId = trGid.id;
+        divGid.classList.add("table-success");
+        choiceGidId = divGid.id;
     }
     else {
-        choiceGidId = trGid.id;
-        trGid.classList.add("table-success");
+        choiceGidId = divGid.id;
+        divGid.classList.add("table-success");
     }
     manageOrderBtn(true);
 
@@ -382,11 +361,6 @@ function inputsOrderHandler(event) {
 
 }
 
-// Price = guideServiceCost × hoursNumber × isThisDayOff + isItMorning + isItEvening +
-// numberOfVisitors,
-// где:
-// ● guideServiceCost – стоимость услуг гида за один час;
-// ● hoursNumber – длительность экскурсии в часах;
 // ● isThisDayOff – множитель, отвечающий за повышение стоимости в праздничные и
 // выходные дни. Для будней3 равен 1, для праздничных и выходных дней (сб, вс) – 1,5;
 // ● isItMorning – надбавка за раннее время экскурсии. Для экскурсий, которые начинаются

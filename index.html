@@ -73,24 +73,6 @@
             <div class="route-table mt-3">
 
             </div>
-            <!-- <table class="table route-table mt-3">
-                <thead>
-                    <tr>
-                        <th scope="col">Название</th>
-                        <th scope="col">Описание</th>
-                        <th scope="col">Основные объекты</th>
-                        <th scope="col"></th>
-                    </tr>
-                </thead>
-                <tbody class="route-tbody">
-                    <tr>
-                        <th scope="row"></th>
-                        <td>Загрузка.</td>
-                        <td>Пожалуйста, ожидайте.</td>
-                        <td class="align-middle"><button class="btn btn-info text-light">Выбрать</button></td>
-                    </tr>
-                </tbody>
-            </table> -->
 
             <ul class="pagination justify-content-center mt-3">
                 <li class="page-item to-start">
@@ -109,31 +91,6 @@
                     </a>
                 </li>
             </ul>
-
-            <template id="tr-template">
-                <tr>
-                    <th scope="row" class="name">2</th>
-                    <td class="desc">Jacob</td>
-                    <td class="main-object">Thornton</td>
-                    <td class="align-middle"><button class="btn btn-info text-light choise-btn">Выбрать</button></td>
-                </tr>
-            </template>
-            <template id="div-template">
-                <div>
-                    <h4 class="name">Нескучный сад</h4>
-                    <p class="desc">Нескучный сад – старейший парк Москвы. В середине XVIII века здесь, в своём имении,
-                        известный московский миллионер Прокопий Демидов построил дворец, получивший название
-                        «Демидовский». На крутом берегу Москвы-реки он устроил насыпные террасы и разбил огромный сад с
-                        собранием более 2000 видов растений. При следующем владельце, графе А. Г. Орлове-Чесменском, на
-                        территории усадьбы появился целый ряд павильонов, беседок и различных садовых «затей», многие из
-                        которых сохранились до наших дней. Когда усадьбу купил император Николай I, он дал владению
-                        название Нескучный сад. Именно так называлось имение, принадлежавшее князю Н. Ю. Трубецкому, с
-                        большим парком, с зелеными лабиринтами, диковинными беседками и оранжереями.</p>
-                    <p class="main-object">ЦПКиО им. Горького - Зеленый театр (Театр С. Намина)- Нескучный сад</p>
-                    <button class="btn btn-info text-light choise-btn">Выбрать</button>
-                    <div class="heading-line mt-3"></div>
-                </div>
-            </template>
         </section>
 
         <section class="gid my-5 container-lg">
@@ -160,47 +117,6 @@
             <div class="gid-table mt-3 d-sm-flex flex-wrap justify-content-evenly">
 
             </div>
-            <!-- <table class="table gid-table mt-3">
-                <thead>
-                    <tr>
-                        <th scope="col">Фамилия, имя</th>
-                        <th scope="col">Языки</th>
-                        <th scope="col">Опыт работы</th>
-                        <th scope="col">Стоимость услуги в час</th>
-                        <th scope="col"></th>
-                    </tr>
-                </thead>
-                <tbody class="gid-tbody">
-                    <tr>
-                        <th scope="row"></th>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td class="align-middle"></td>
-                    </tr>
-                </tbody>
-            </table> -->
-
-            <template id="tr-gid-template">
-                <tr>
-                    <th scope="row" class="name">2</th>
-                    <td class="lang">Jacob</td>
-                    <td class="exp">Thornton</td>
-                    <td class="price">500</td>
-                    <td class="align-middle"><button class="btn btn-info text-light choise-gid-btn">Выбрать</button>
-                    </td>
-                </tr>
-            </template>
-            <template id="div-gid-template">
-                <div class="gid-div">
-                    <p class="name fw-bold mb-2">Maria Price</p>
-                    <p class="my-2">Языки: <span class="lang">Uzbek</span></p>
-                    <p class="my-2">Опыт работы: <span class="exp">7</span></p>
-                    <p class="my-2">Стоимость услуги в час: <span class="price">3786</span></p>
-                    <button class="btn btn-info text-light choise-gid-btn">Выбрать</button>
-                </div>
-            </template>
-
         </section>
 
         <section class="alerts fs-5 container-lg">
@@ -224,24 +140,33 @@
                         <p>Название маршрута: <span class="route-name">Аллея</span></p>
                         <form class="needs-validation was-validated new-order-form" novalidate>
                             <div class="row mb-3">
-                                <div class="col-md-3">
+                                <div class="col-md-6">
                                     <label class="col-form-label" for="date-excursion">Дата экскурсии:</label>
-                                    <div style="width: 150px;">
+                                    <div class="order-inputs">
                                         <input class="form-control" type="date" name="date" id="date-excursion"
-                                            value="2023-01-20" required>
+                                            value="2023-01-20" aria-describedby="dateHelpBlock" required>
+                                        <div id="dateHelpBlock" class="form-text">
+                                            Экскурсия не может проводиться в день создании заявки.
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="col-md-3">
+                                <div class="col-md-6">
                                     <label class="col-form-label" for="time-excursion">Время начала:</label>
-                                    <div style="width: 150px;">
+                                    <div class="order-inputs">
                                         <input class="form-control" type="time" name="time" id="time-excursion"
-                                            value="14:00" min="09:00" max="23:00" step="1800" required>
+                                            value="14:00" min="09:00" max="23:00" step="1800"
+                                            aria-describedby="timeHelpBlock" required>
+                                        <div id="timeHelpBlock" class="form-text">
+                                            Экскурсии проводятся с 9:00 до 23:00 каждые полчаса.
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="col-md-3">
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
                                     <label class="col-form-label" for="duration-excursion">Длительность
                                         экскурсии:</label>
-                                    <div style="width: 150px;">
+                                    <div class="order-inputs">
                                         <select class="form-select" name="duration" id="duration-excursion">
                                             <option>1 час</option>
                                             <option>2 часа</option>
@@ -249,11 +174,14 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-md-3">
+                                <div class="col-md-6">
                                     <label class="col-form-label" for="persons-excursion">Количество человек: </label>
-                                    <div style="width: 150px;">
+                                    <div class="order-inputs">
                                         <input class="form-control" type="number" name="persons" id="persons-excursion"
-                                            value="1" min="1" max="20" required>
+                                            value="1" min="1" max="20" aria-describedby="personsHelpBlock" required>
+                                        <div id="personsHelpBlock" class="form-text">
+                                            Экскурсионная группа не более 20 человек.
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -306,6 +234,26 @@
     <footer class="bg-info d-flex justify-content-center py-2, mt-3">
         <span class="fs-5 text-light">&COPY; ООО «Вечерняя прогулка»</span>
     </footer>
+
+    <template id="div-gid-template">
+        <div class="gid-div">
+            <p class="name fw-bold mb-2"></p>
+            <p class="my-2">Языки: <span class="lang"></span></p>
+            <p class="my-2">Опыт работы: <span class="exp"></span></p>
+            <p class="my-2">Стоимость услуги в час: <span class="price"></span></p>
+            <button class="btn btn-info text-light choise-gid-btn">Выбрать</button>
+        </div>
+    </template>
+
+    <template id="div-template">
+        <div>
+            <h4 class="name"></h4>
+            <p class="desc"></p>
+            <p class="main-object"></p>
+            <button class="btn btn-info text-light choise-btn">Выбрать</button>
+            <div class="heading-line mt-3"></div>
+        </div>
+    </template>
 
     <template id="alert-template">
         <div class="alert alert-dismissible" role="alert">

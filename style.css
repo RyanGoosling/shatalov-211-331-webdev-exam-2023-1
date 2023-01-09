@@ -32,3 +32,7 @@
     border-radius: 10px;
     min-width: 250px;
 }
+
+.order-inputs {
+    width: 75%;
+}
