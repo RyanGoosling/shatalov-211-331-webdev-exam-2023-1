@@ -33,6 +33,7 @@ async function loadRoute() {
     let response = await fetch(urlRoute);
     let routeList = await response.json();
     mainRoutes = routeList;
+    routes = mainRoutes;
 }
 
 function updateRouteTable(page, makeSelectBool = true) {
