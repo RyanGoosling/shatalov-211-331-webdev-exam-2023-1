@@ -50,7 +50,7 @@ function createNewTr(oneOrder, n) {
     let trOrder = trTemplate.content.firstElementChild.cloneNode(true);
     trOrder.id = oneOrder.id;
     let number = trOrder.querySelector('.number');
-    number.innerHTML = oneOrder.id; //n + 1;
+    number.innerHTML = n + 1; //oneOrder.id
     let oneRoute = mainRoutes.filter(route => route.id == oneOrder.route_id);
     let name = trOrder.querySelector(".name");
     name.innerHTML = oneRoute[0].name;
@@ -78,7 +78,7 @@ function updateOrderTable(page = 1) {
     }
 }
 
-function makePagination(openPage = '1', makeSelectBool = true) {
+function makePagination(openPage = '1') {
 
     let activeBtn = document.querySelector(".active");
     let startBtn = document.querySelector(".to-start").children[0];
@@ -328,9 +328,7 @@ window.onload = async function () {
     document.querySelector(".pagination").addEventListener("click", paginationHandler);
 
     document.querySelector(".new-order-form").addEventListener("change", inputsOrderHandler);
-
-    // let modalDel = document.getElementById("del-order");
-    // modalDel.addEventListener("show.bs.modal", delTaskHandler);
+    
     let delBtn = document.getElementsByClassName("del-order-btn")[0];
     delBtn.addEventListener("click", delHandler);
 

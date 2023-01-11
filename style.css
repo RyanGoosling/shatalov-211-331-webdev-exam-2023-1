@@ -48,3 +48,7 @@ i {
 .order-table {
     min-height: 276px;
 }
+
+.w300 {
+    width: 300px;
+}
