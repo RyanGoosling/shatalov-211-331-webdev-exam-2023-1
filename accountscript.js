@@ -218,20 +218,20 @@ function showOrderHandler(action) {
     if (action == 'show') {
         dateInput.classList.remove('form-control'); 
         timeInput.classList.remove('form-control'); 
-        durationInput.classList.remove('form-control');
+        // durationInput.classList.remove('form-control'); plaintext don't work
         personsInput.classList.remove('form-control');
         dateInput.classList.add('form-control-plaintext'); 
         timeInput.classList.add('form-control-plaintext'); 
-        durationInput.classList.add('form-control-plaintext');
+        // durationInput.classList.add('form-control-plaintext'); plaintext don't work
         personsInput.classList.add('form-control-plaintext');
     } else if(action == 'edit') {
         dateInput.classList.remove('form-control-plaintext'); 
         timeInput.classList.remove('form-control-plaintext'); 
-        durationInput.classList.remove('form-control-plaintext');
+        // durationInput.classList.remove('form-control-plaintext'); plaintext don't work
         personsInput.classList.remove('form-control-plaintext');
         dateInput.classList.add('form-control'); 
         timeInput.classList.add('form-control'); 
-        durationInput.classList.add('form-control');
+        // durationInput.classList.add('form-control'); plaintext don't work
         personsInput.classList.add('form-control');
     }
 
@@ -269,6 +269,46 @@ function alertOrder(response, action) {
     sectionAlert.append(divAlert);
 }
 
+let parsResponse;
+
+async function newOrderHandler(event) {
+    let action = document.getElementById('persons-excursion').classList.contains('form-control-plaintext') ? 'show' : 'edit';
+    if (action == 'show')
+        return;
+    let modalWindow = event.target.closest(".modal");
+    let formInputs = modalWindow.querySelector("form").elements;
+    let route_id = formInputs["route_id"].value;
+    let guide_id = formInputs["guide_id"].value;
+    let date = formInputs["date"].value;
+    let time = formInputs["time"].value;
+    let duration = formInputs["duration"].value[0];
+    let persons = formInputs["persons"].value;
+    let optionFirst = formInputs["optionFirst"].checked ? 1 : 0;
+    let optionSecond = formInputs["optionSecond"].checked ? 1 : 0;
+    let price = document.querySelector('.total-price').innerText;
+
+    let orderData = new FormData();
+    orderData.append('route_id', route_id);
+    orderData.append('guide_id', guide_id);
+    orderData.append('date', date);
+    orderData.append('time', time);
+    orderData.append('duration', Number(duration));
+    orderData.append('persons', persons);
+    orderData.append('optionFirst', optionFirst);
+    orderData.append('optionSecond', optionSecond); 
+    orderData.append('price', price);
+
+    urlModified(true);
+    let response = await fetch(orderUrl, {method: 'PUT', body: orderData});
+    parsResponse = await response.json();
+    urlModified();
+
+    modalWindow.querySelector('form').reset();
+    await loadOrder();
+    updateOrderTable();
+    alertOrder(parsResponse, 'edit');
+}
+
 async function delHandler(event) {
     urlModified(true);
     let responseFromServer = await fetch(orderUrl, { method: 'DELETE' });
@@ -293,4 +333,6 @@ window.onload = async function () {
     // modalDel.addEventListener("show.bs.modal", delTaskHandler);
     let delBtn = document.getElementsByClassName("del-order-btn")[0];
     delBtn.addEventListener("click", delHandler);
+
+    document.querySelector("button.create-new-order").addEventListener("click", newOrderHandler);
 }
