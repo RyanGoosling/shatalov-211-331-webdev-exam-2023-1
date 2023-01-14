@@ -202,6 +202,10 @@ function showOrderHandler(action) {
     let optionSecondInput = document.getElementById('option-2');
     let priceInput = document.querySelector('.total-price');
 
+    let minDay = new Date;
+    minDay.setDate(minDay.getDate() + 1);
+    dateInput.attributes.min.value = minDay.toJSON().slice(0, 10);
+
     let duration;
     if (choiceOrder.duration == 1)
         duration = choiceOrder.duration + ' час';
@@ -215,25 +219,38 @@ function showOrderHandler(action) {
     optionSecondInput.checked = choiceOrder.optionSecond;
     priceInput.innerText = choiceOrder.price;
     console.log(action);
+
     if (action == 'show') {
         dateInput.classList.remove('form-control'); 
         timeInput.classList.remove('form-control'); 
-        // durationInput.classList.remove('form-control'); plaintext don't work
         personsInput.classList.remove('form-control');
         dateInput.classList.add('form-control-plaintext'); 
         timeInput.classList.add('form-control-plaintext'); 
-        // durationInput.classList.add('form-control-plaintext'); plaintext don't work
         personsInput.classList.add('form-control-plaintext');
-    } else if(action == 'edit') {
+
+        dateInput.disabled = true; 
+        timeInput.disabled = true; 
+        durationInput.disabled = true;
+        personsInput.disabled = true;
+        optionFirstInput.disabled = true;
+        optionSecondInput.disabled = true;
+    } 
+    else if(action == 'edit') {
         dateInput.classList.remove('form-control-plaintext'); 
         timeInput.classList.remove('form-control-plaintext'); 
-        // durationInput.classList.remove('form-control-plaintext'); plaintext don't work
         personsInput.classList.remove('form-control-plaintext');
         dateInput.classList.add('form-control'); 
         timeInput.classList.add('form-control'); 
-        // durationInput.classList.add('form-control'); plaintext don't work
         personsInput.classList.add('form-control');
+
+        dateInput.disabled = false;
+        timeInput.disabled = false;
+        durationInput.disabled = false;
+        personsInput.disabled = false;
+        optionFirstInput.disabled = false;
+        optionSecondInput.disabled = false;
     }
+
 
     updatePrice();
 }

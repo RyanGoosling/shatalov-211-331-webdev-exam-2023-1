@@ -62,7 +62,7 @@
                 </table>
             </div>
 
-            <ul class="pagination justify-content-center mt-3">
+            <ul class="pagination justify-content-center align-items-center mt-3">
                 <li class="page-item to-start">
                     <a class="page-link disabled" aria-label="Previous" href="#route-list">
                         В начало
@@ -103,9 +103,9 @@
                                 <label class="col-form-label" for="date-excursion">Дата экскурсии:</label>
                                 <div class="order-inputs">
                                     <input class="form-control" type="date" name="date" id="date-excursion"
-                                        value="2023-01-20" aria-describedby="dateHelpBlock" required>
+                                        value="2023-01-20" aria-describedby="dateHelpBlock" required min="2023-01-15" step="1">
                                     <div id="dateHelpBlock" class="form-text">
-                                        Экскурсия не может проводиться в день создании заявки.
+                                        Экскурсия не может проводиться в день создании заявки или ранее.
                                     </div>
                                 </div>
                             </div>

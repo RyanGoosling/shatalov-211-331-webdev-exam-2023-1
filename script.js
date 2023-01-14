@@ -36,7 +36,12 @@ async function loadRoute() {
     routes = mainRoutes;
 }
 
-function updateRouteTable(page, makeSelectBool = true) {
+function updateRouteTable(page) {
+    let makeSelectBool = true;
+    let selectObject = document.querySelector('.search-object');
+    if (selectObject.value != 'Не выбрано')
+        makeSelectBool = false;
+
     let bodyTable = document.querySelector('.route-table');
     bodyTable.innerHTML = '';
 
@@ -63,14 +68,14 @@ function updateRouteTable(page, makeSelectBool = true) {
 
 }
 
-function makePagination(openPage = '1', makeSelectBool = true) {
+function makePagination(openPage = '1') {
 
     let activeBtn = document.querySelector(".active");
     let startBtn = document.querySelector(".to-start").children[0];
     let endBtn = document.querySelector(".to-end").children[0];
     let paginationBtns = document.querySelectorAll(".page-link");
 
-    let lastPage = ((routes.length + (10 - routes.length % 10)) / 10).toString();
+    let lastPage = (Math.ceil(routes.length / 5)).toString();
     let start = Math.max(Number(openPage) - 2, 1);
     let end = Math.min(start + 4, Number(lastPage)); //Number(openPage) + 2
     let newActive = openPage;
@@ -94,7 +99,7 @@ function makePagination(openPage = '1', makeSelectBool = true) {
     if (newActive == '1') {
         startBtn.classList.add("disabled");
     }
-    else if (newActive == lastPage) {
+    if (newActive == lastPage) {
         endBtn.classList.add("disabled");
     }
 
@@ -116,7 +121,7 @@ function makePagination(openPage = '1', makeSelectBool = true) {
 
     currentPage = newActive;
 
-    updateRouteTable(Number(currentPage), makeSelectBool);
+    updateRouteTable(currentPage);
 }
 
 function paginationHandler(event) {
@@ -130,34 +135,18 @@ function paginationHandler(event) {
     makePagination(event.target.innerText);
 }
 
-function searchNameHandler(event) {
-    let searchRoute = [];
-    if (event.target.value == '') {
-        routes = mainRoutes;
-    }
-    else {
-        for (let i = 0; i < mainRoutes.length; i++) {
-            if (mainRoutes[i].name.toLowerCase().includes(event.target.value.toLowerCase()))
-                searchRoute.push(mainRoutes[i]);
-        }
-        routes = searchRoute;
-    }
-    makePagination('1');
-}
+function searchRouteHandler(event) {
+    routes = mainRoutes;
+    let searchName = document.querySelector('.search-name');
+    let selectObject = document.querySelector('.search-object');
 
-function selectRouteHandler(event) {
-    let searchRoute = [];
-    if (event.target.value == 'Не выбрано') {
-        routes = mainRoutes;
-    }
-    else {
-        for (let i = 0; i < mainRoutes.length; i++) {
-            if (mainRoutes[i].mainObject.includes(event.target.value))
-                searchRoute.push(mainRoutes[i]);
-        }
-        routes = searchRoute;
-    }
-    makePagination('1', false);
+    if (searchName.value != '')
+        routes = routes.filter(route => route.name.toLowerCase().includes(searchName.value.toLowerCase()));
+    
+    if (selectObject.value != 'Не выбрано')
+        routes = routes.filter(route => route.mainObject.includes(selectObject.value));
+
+    makePagination('1');
 }
 
 function choiceRouteHandler(event) {
@@ -426,8 +415,8 @@ window.onload = async function () {
     updateRouteTable(1);
     document.querySelector(".pagination").addEventListener("click", paginationHandler);
 
-    document.querySelector(".search-name").addEventListener("input", searchNameHandler);
-    document.querySelector(".search-object").addEventListener("change", selectRouteHandler);
+    document.querySelector(".search-name").addEventListener("input", searchRouteHandler);
+    document.querySelector(".search-object").addEventListener("change", searchRouteHandler);
 
     document.querySelector(".search-lang").addEventListener("change", searchGidHandler);
     document.querySelector(".search-from").addEventListener("input", searchGidHandler);
