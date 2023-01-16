@@ -54,6 +54,62 @@
             </div>
         </section>
 
+        <section class="pros mt-3">
+            <div class="container-lg">
+                <h2>Почему мы?</h2>
+                <div class="row bg-info">
+                    <div class="col-lg-6 py-0">
+                        <div class="row">
+                            <div
+                                class="col-lg-6 col-sm-6 p-0 d-flex align-items-center justify-content-center pros-text">
+                                <p class="m-0 fs-5 fw-bold text-center text-light">Покажем всем известную Москву</p>
+                            </div>
+                            <div class="col-lg-6 col-sm-6 p-0">
+                                <img class="img-fluid" src="images/St-Basil-Cathedral.jpg" alt="St. Basil's Cathedral"
+                                    height="700">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 py-0">
+                        <div class="row flex-row-reverse flex-lg-row">
+                            <div
+                                class="col-lg-6 col-sm-6 p-0 d-flex align-items-center justify-content-center pros-text">
+                                <p class="m-0 fs-5 fw-bold text-center text-light">Проведём по малоизвестным местам</p>
+                            </div>
+                            <div class="col-lg-6 col-sm-6 p-0">
+                                <img class="img-fluid" src="images/hutonwobblystilts.jpg" alt="a hut on wobbly stilts"
+                                    height="700">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row bg-info">
+                    <div class="col-lg-6 py-0">
+                        <div class="row flex-row flex-lg-row-reverse">
+                            <div
+                                class="col-lg-6 col-sm-6 p-0 d-flex align-items-center justify-content-center pros-text">
+                                <p class="m-0 fs-5 fw-bold text-center text-light">Покажем самые потаённые углы</p>
+                            </div>
+                            <div class="col-lg-6 col-sm-6 p-0">
+                                <img class="img-fluid" src="images/museumKonuhov.jpg" alt="green yard" height="220">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 py-0">
+                        <div class="row flex-row-reverse">
+                            <div
+                                class="col-lg-6 col-sm-6 p-0 d-flex align-items-center justify-content-center pros-text">
+                                <p class="m-0 fs-5 fw-bold text-center text-light">Откроем новый взгляд на Москву</p>
+                            </div>
+                            <div class="col-lg-6 col-sm-6 p-0">
+                                <img class="img-fluid" src="images/night-moscow.jpg" alt="green yard" height="700">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <section class="route mt-5 container-lg">
             <h2 id="route-list" data-bs-spy="scroll">Список пешеходных маршрутов</h2>
             <form class="search mt-4">
@@ -144,7 +200,8 @@
                                     <label class="col-form-label" for="date-excursion">Дата экскурсии:</label>
                                     <div class="order-inputs">
                                         <input class="form-control" type="date" name="date" id="date-excursion"
-                                            value="2023-01-20" aria-describedby="dateHelpBlock" required>
+                                            value="2023-01-20" aria-describedby="dateHelpBlock" min="2023-01-15"
+                                            step="1" required>
                                         <div id="dateHelpBlock" class="form-text">
                                             Экскурсия не может проводиться в день создании заявки или ранее.
                                         </div>

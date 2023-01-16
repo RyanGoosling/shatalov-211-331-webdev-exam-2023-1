@@ -52,3 +52,7 @@ i {
 .w300 {
     width: 300px;
 }
+
+.pros-text {
+    min-height: 128px;
+}

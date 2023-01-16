@@ -1,11 +1,19 @@
-// 1. Использовать скидку для школьников и студентов. При выборе чекбокса стоимость
+// 1. Использовать скидку для школьников и студентов. 
+// При выборе чекбокса стоимость
 // уменьшается на 15%.
-// 5. Тематические сувениры для посетителей. Стоимость увеличивается на 500 рублей для
+// 5. Тематические сувениры для посетителей. 
+// Стоимость увеличивается на 500 рублей для
 // каждого посетителя
 
-let urlRoute = new URL("http://exam-2023-1-api.std-900.ist.mospolytech.ru/api/routes?api_key=3c8ee4d3-00fb-49b5-9040-546e5c98ba1d");
-let urlGid = new URL("http://exam-2023-1-api.std-900.ist.mospolytech.ru/api/routes/{id-маршрута}/guides?api_key=3c8ee4d3-00fb-49b5-9040-546e5c98ba1d");
-let urlOrder = new URL("http://exam-2023-1-api.std-900.ist.mospolytech.ru/api/orders?api_key=3c8ee4d3-00fb-49b5-9040-546e5c98ba1d");
+let urlRoute = new URL("http://exam-2023-1-api.std-900.ist.mospolytech.ru");
+urlRoute.pathname = '/api/routes';
+urlRoute.searchParams.set('api_key', '3c8ee4d3-00fb-49b5-9040-546e5c98ba1d');
+let urlGid = new URL("http://exam-2023-1-api.std-900.ist.mospolytech.ru");
+urlGid.pathname = '/api/routes/{id-маршрута}/guides';
+urlGid.searchParams.set('api_key', '3c8ee4d3-00fb-49b5-9040-546e5c98ba1d');
+let urlOrder = new URL("http://exam-2023-1-api.std-900.ist.mospolytech.ru");
+urlOrder.pathname = '/api/orders';
+urlOrder.searchParams.set('api_key', '3c8ee4d3-00fb-49b5-9040-546e5c98ba1d');
 let mainRoutes, routes;
 let currentPage = document.querySelector(".active").innerText;
 let divRouteTemplate = document.getElementById("div-template");
@@ -13,6 +21,131 @@ let divGidTemplate = document.getElementById("div-gid-template");
 let choiceRouteId = 0, choiceGidId = 0;
 let mainGids, gids;
 let choiceRoute, choiceGid;
+
+function manageOrderBtn(status = true) {
+    let createOrderBtn = document.querySelector(".create-order-btn");
+    if (status) {
+        createOrderBtn.classList.remove("disabled");
+        createOrderBtn.classList.remove("btn-secondary");
+        createOrderBtn.classList.add("btn-primary");
+    } else {
+        createOrderBtn.classList.add("disabled");
+        createOrderBtn.classList.add("btn-secondary");
+        createOrderBtn.classList.remove("btn-primary");
+    }
+}
+
+async function choiceGidHandler(event) {
+    let divGid = event.target.closest("div");
+    if (choiceGidId == divGid.id) {
+        divGid.classList.remove("table-success");
+        choiceGidId = 0;
+        manageOrderBtn(false);
+        return;
+    } else if (choiceGidId != 0) {
+        choiceGidElement = document.getElementById(choiceGidId);
+        if (choiceGidElement != null)
+            choiceGidElement.classList.remove("table-success");
+        divGid.classList.add("table-success");
+        choiceGidId = divGid.id;
+    } else {
+        choiceGidId = divGid.id;
+        divGid.classList.add("table-success");
+    }
+    manageOrderBtn(true);
+
+    //url for choice guide
+    let tempUrl = new URL('http://exam-2023-1-api.std-900.ist.mospolytech.ru');
+    tempUrl.pathname = '/api/guides/' + choiceGidId;
+    tempUrl.searchParams.set('api_key', '3c8ee4d3-00fb-49b5-9040-546e5c98ba1d');
+    let response = await fetch(tempUrl);
+    choiceGid = await response.json();
+}
+
+function createNewGid(gid) {
+    let divGid = divGidTemplate.content.firstElementChild.cloneNode(true);
+    divGid.id = gid.id;
+    let name = divGid.querySelector(".name");
+    name.innerHTML = gid.name;
+    let lang = divGid.querySelector(".lang");
+    lang.innerHTML = gid.language;
+    let exp = divGid.querySelector(".exp");
+    exp.innerHTML = gid.workExperience;
+    let price = divGid.querySelector(".price");
+    price.innerHTML = gid.pricePerHour;
+    divGid.querySelector("button").addEventListener("click", choiceGidHandler);
+
+    return divGid;
+}
+
+function updateGidTable(makeSelectBool = true) {
+    document.querySelector("#gid-list > span").innerText = choiceRoute.name;
+
+    let selectLang = document.querySelector(".search-lang");
+
+    if (makeSelectBool) {
+        selectLang.innerHTML = '';
+        let optionLang = document.createElement('option');
+        optionLang.innerHTML = 'Не выбрано';
+        selectLang.append(optionLang);
+    }
+
+    let bodyTable = document.querySelector('.gid-table');
+    bodyTable.innerHTML = '';
+    for (let i = 0; i < gids.length; i++) {
+        let divGid = createNewGid(gids[i]);
+        bodyTable.append(divGid);
+
+        if (makeSelectBool) {
+            //update select language
+            let optionLang = document.createElement('option');
+            optionLang.innerHTML = gids[i].language;
+            if (!selectLang.innerText.includes(gids[i].language))
+                selectLang.append(optionLang);
+        }
+    }
+}
+
+async function loadGid() {
+    if (choiceRouteId == 0) {
+        mainGids = [];
+        gids = [];
+    } else {
+        urlGid.pathname = `/api/routes/${choiceRouteId}`;
+        let response = await fetch(urlGid);
+        choiceRoute = await response.json();
+
+        urlGid.pathname += "/guides";
+        response = await fetch(urlGid);
+        let gidList = await response.json();
+
+        mainGids = gidList;
+        gids = mainGids;
+    }
+
+    updateGidTable();
+}
+
+function choiceRouteHandler(event) {
+    let divRoute = event.target.closest("div");
+    if (choiceRouteId == divRoute.id) {
+        divRoute.classList.remove("table-success");
+        choiceRouteId = 0;
+    } else if (choiceRouteId != 0) {
+        let choiceRouteElement = document.getElementById(choiceRouteId);
+        if (choiceRouteElement != null)
+            choiceRouteElement.classList.remove("table-success");
+        divRoute.classList.add("table-success");
+        choiceRouteId = divRoute.id;
+    } else {
+        choiceRouteId = divRoute.id;
+        divRoute.classList.add("table-success");
+    }
+    choiceGid = {};
+    choiceGidId = 0;
+    manageOrderBtn(false);
+    loadGid();
+}
 
 function createNewDiv(oneRoute) {
     let divRoute = divRouteTemplate.content.firstElementChild.cloneNode(true);
@@ -23,7 +156,8 @@ function createNewDiv(oneRoute) {
     desc.innerHTML = oneRoute.description;
     let mainObject = divRoute.querySelector(".main-object");
     mainObject.innerHTML = oneRoute.mainObject;
-    divRoute.querySelector("button").addEventListener("click", choiceRouteHandler);
+    let choiceBtn = divRoute.querySelector("button");
+    choiceBtn.addEventListener("click", choiceRouteHandler);
 
     return divRoute;
 }
@@ -129,8 +263,7 @@ function paginationHandler(event) {
     else if (event.target.tagName == 'LI') {
         if (event.target.children[0].classList.contains("disabled"))
             return;
-    }
-    else if (event.target.classList.contains("disabled")) return;
+    } else if (event.target.classList.contains("disabled")) return;
 
     makePagination(event.target.innerText);
 }
@@ -141,135 +274,14 @@ function searchRouteHandler(event) {
     let selectObject = document.querySelector('.search-object');
 
     if (searchName.value != '')
-        routes = routes.filter(route => route.name.toLowerCase().includes(searchName.value.toLowerCase()));
-    
+        routes = routes.filter(route =>
+            route.name.toLowerCase().includes(searchName.value.toLowerCase()));
+
     if (selectObject.value != 'Не выбрано')
-        routes = routes.filter(route => route.mainObject.includes(selectObject.value));
+        routes = routes.filter(route =>
+            route.mainObject.includes(selectObject.value));
 
     makePagination('1');
-}
-
-function choiceRouteHandler(event) {
-    let divRoute = event.target.closest("div");
-    if (choiceRouteId == divRoute.id) {
-        divRoute.classList.remove("table-success");
-        choiceRouteId = 0;
-    }
-    else if (choiceRouteId != 0) {
-        if (document.getElementById(choiceRouteId) != null)
-            document.getElementById(choiceRouteId).classList.remove("table-success");
-        divRoute.classList.add("table-success");
-        choiceRouteId = divRoute.id;
-    }
-    else {
-        choiceRouteId = divRoute.id;
-        divRoute.classList.add("table-success");
-    }
-
-    loadGid();
-}
-
-async function loadGid() {
-    if (choiceRouteId == 0) {
-        mainGids = [];
-        gids = [];
-    }
-    else {
-        urlGid.pathname = `/api/routes/${choiceRouteId}`;
-        let response = await fetch(urlGid);
-        choiceRoute = await response.json();
-
-        urlGid.pathname += "/guides";
-        response = await fetch(urlGid);
-        let gidList = await response.json();
-
-        mainGids = gidList;
-        gids = mainGids;
-    }
-
-    updateGidTable();
-}
-
-function createNewGid(gid) {
-    let divGid = divGidTemplate.content.firstElementChild.cloneNode(true);
-    divGid.id = gid.id;
-    let name = divGid.querySelector(".name");
-    name.innerHTML = gid.name;
-    let lang = divGid.querySelector(".lang");
-    lang.innerHTML = gid.language;
-    let exp = divGid.querySelector(".exp");
-    exp.innerHTML = gid.workExperience;
-    let price = divGid.querySelector(".price");
-    price.innerHTML = gid.pricePerHour;
-    divGid.querySelector("button").addEventListener("click", choiceGidHandler);
-
-    return divGid;
-}
-
-function updateGidTable(makeSelectBool = true) {
-    document.querySelector("#gid-list > span").innerText = choiceRoute.name;
-
-    let selectLang = document.querySelector(".search-lang");
-
-    if (makeSelectBool) {
-        selectLang.innerHTML = '';
-        let optionLang = document.createElement('option');
-        optionLang.innerHTML = 'Не выбрано';
-        selectLang.append(optionLang);
-    }
-
-    let bodyTable = document.querySelector('.gid-table');
-    bodyTable.innerHTML = '';
-    for (let i = 0; i < gids.length; i++) {
-        let divGid = createNewGid(gids[i]);
-        bodyTable.append(divGid);
-
-        if (makeSelectBool) {
-            let optionLang = document.createElement('option'); //update select language
-            optionLang.innerHTML = gids[i].language;
-            if (!selectLang.innerText.includes(gids[i].language))
-                selectLang.append(optionLang);
-        }
-    }
-}
-
-function manageOrderBtn(status = true) {
-    let createOrderBtn = document.querySelector(".create-order-btn");
-    if (status) {
-        createOrderBtn.classList.remove("disabled");
-        createOrderBtn.classList.remove("btn-secondary");
-        createOrderBtn.classList.add("btn-primary");
-    } else {
-        createOrderBtn.classList.add("disabled");
-        createOrderBtn.classList.add("btn-secondary");
-        createOrderBtn.classList.remove("btn-primary");
-    }
-}
-
-async function choiceGidHandler(event) {
-    let divGid = event.target.closest("div");
-    if (choiceGidId == divGid.id) {
-        divGid.classList.remove("table-success");
-        choiceGidId = 0;
-        manageOrderBtn(false);
-        return;
-    }
-    else if (choiceGidId != 0) {
-        if (document.getElementById(choiceGidId) != null)
-            document.getElementById(choiceGidId).classList.remove("table-success");
-        divGid.classList.add("table-success");
-        choiceGidId = divGid.id;
-    }
-    else {
-        choiceGidId = divGid.id;
-        divGid.classList.add("table-success");
-    }
-    manageOrderBtn(true);
-
-    let tempUrl = new URL('http://exam-2023-1-api.std-900.ist.mospolytech.ru/api/guides/?api_key=3c8ee4d3-00fb-49b5-9040-546e5c98ba1d'); //url for choice guide
-    tempUrl.pathname += choiceGidId;
-    let response = await fetch(tempUrl);
-    choiceGid = await response.json();
 }
 
 function searchGidHandler(event) {
@@ -300,10 +312,10 @@ async function isThisDayOff(day) {
 
 async function updatePrice() {
     let spanPrice = document.querySelector('.total-price');
-
+    // in duration: value = 'n час', value[0] = n
     let date = document.getElementById('date-excursion').value;
     let time = document.getElementById('time-excursion').value;
-    let duration = document.getElementById('duration-excursion').value[0]; //n час
+    let duration = document.getElementById('duration-excursion').value[0];
     let persons = document.getElementById('persons-excursion').value;
     let optionFirst = document.getElementById('option-1').checked ? 0.85 : 1;
     let optionSecond = document.getElementById('option-2').checked ? 500 : 0;
@@ -318,7 +330,8 @@ async function updatePrice() {
 
     console.log(duration, date, time, optionSecond, persons, optionFirst);
 
-    let price = (choiceGid.pricePerHour * duration * date + time + optionSecond + persons) * optionFirst;
+    let price = (choiceGid.pricePerHour * duration * date
+        + time + optionSecond + persons) * optionFirst;
     spanPrice.innerText = Math.round(price);
 }
 
@@ -336,6 +349,12 @@ function showNewOrderHandler(event) {
     event.target.querySelector(".route-name").innerText = choiceRoute.name;
     event.target.querySelector("#guide-id").value = choiceGid.id;
     event.target.querySelector("#route-id").value = choiceRoute.id;
+    //set min day for input:date
+    let dateInput = document.getElementById('date-excursion');
+    let minDay = new Date;
+    minDay.setDate(minDay.getDate() + 1);
+    dateInput.attributes.min.value = minDay.toJSON().slice(0, 10);
+
     manageSubmitBtn();
     updatePrice();
 }
@@ -351,8 +370,10 @@ function inputsOrderHandler(event) {
 }
 
 // ● isThisDayOff – множитель, отвечающий за повышение стоимости в праздничные и
-// выходные дни. Для будней3 равен 1, для праздничных и выходных дней (сб, вс) – 1,5;
-// ● isItMorning – надбавка за раннее время экскурсии. Для экскурсий, которые начинаются
+// выходные дни. Для будней3 равен 1, 
+// для праздничных и выходных дней (сб, вс) – 1,5;
+// ● isItMorning – надбавка за раннее время экскурсии. 
+// Для экскурсий, которые начинаются
 // с 9 до 12 часов, равна 400 рублей, для остальных – 0;
 // ● isItEvening – надбавка за вечернее время экскурсии. Для экскурсий, которые
 // начинаются с 20 до 23 часов, равна 1000 рублей, для остальных – 0;
@@ -399,10 +420,10 @@ async function newOrderHandler(event) {
     orderData.append('duration', Number(duration));
     orderData.append('persons', persons);
     orderData.append('optionFirst', optionFirst);
-    orderData.append('optionSecond', optionSecond); 
+    orderData.append('optionSecond', optionSecond);
     orderData.append('price', price);
 
-    let response = await fetch(urlOrder, {method: 'POST', body: orderData});
+    let response = await fetch(urlOrder, { method: 'POST', body: orderData });
     parsResponse = await response.json();
 
     modalWindow.querySelector('form').reset();
@@ -413,17 +434,26 @@ async function newOrderHandler(event) {
 window.onload = async function () {
     await loadRoute();
     updateRouteTable(1);
-    document.querySelector(".pagination").addEventListener("click", paginationHandler);
+    let paginationList = document.querySelector(".pagination");
+    paginationList.addEventListener("click", paginationHandler);
 
-    document.querySelector(".search-name").addEventListener("input", searchRouteHandler);
-    document.querySelector(".search-object").addEventListener("change", searchRouteHandler);
+    let searchName = document.querySelector(".search-name");
+    let searchObject = document.querySelector(".search-object");
+    searchName.addEventListener("input", searchRouteHandler);
+    searchObject.addEventListener("change", searchRouteHandler);
 
-    document.querySelector(".search-lang").addEventListener("change", searchGidHandler);
-    document.querySelector(".search-from").addEventListener("input", searchGidHandler);
-    document.querySelector(".search-to").addEventListener("input", searchGidHandler);
+    let searchLanguage = document.querySelector(".search-lang");
+    let searchExpFrom = document.querySelector(".search-from");
+    let searchExpTo = document.querySelector(".search-to");
+    searchLanguage.addEventListener("change", searchGidHandler);
+    searchExpFrom.addEventListener("input", searchGidHandler);
+    searchExpTo.addEventListener("input", searchGidHandler);
 
-    document.getElementById("new-order").addEventListener("show.bs.modal", showNewOrderHandler);
-    document.querySelector(".new-order-form").addEventListener("change", inputsOrderHandler);
+    let modalWindow = document.getElementById("new-order");
+    let orderInput = document.querySelector(".new-order-form");
+    modalWindow.addEventListener("show.bs.modal", showNewOrderHandler);
+    orderInput.addEventListener("change", inputsOrderHandler);
 
-    document.querySelector("button.create-new-order").addEventListener("click", newOrderHandler);
-}
+    let createOrderBtn = document.querySelector("button.create-new-order");
+    createOrderBtn.addEventListener("click", newOrderHandler);
+};
