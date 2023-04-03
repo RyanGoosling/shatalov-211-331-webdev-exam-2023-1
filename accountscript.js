@@ -1,13 +1,14 @@
 
+const api_key = '3c8ee4d3-00fb-49b5-9040-546e5c98ba1d';
 let orderUrl = new URL('http://exam-2023-1-api.std-900.ist.mospolytech.ru');
 orderUrl.pathname = '/api/orders';
-orderUrl.searchParams.set('api_key', '3c8ee4d3-00fb-49b5-9040-546e5c98ba1d');
+orderUrl.searchParams.set('api_key', api_key);
 let routeUrl = new URL("http://exam-2023-1-api.std-900.ist.mospolytech.ru");
 routeUrl.pathname = '/api/routes';
-routeUrl.searchParams.set('api_key', '3c8ee4d3-00fb-49b5-9040-546e5c98ba1d');
+routeUrl.searchParams.set('api_key', api_key);
 let gidUrl = new URL("http://exam-2023-1-api.std-900.ist.mospolytech.ru");
 gidUrl.pathname = '/api/guides';
-gidUrl.searchParams.set('api_key', '3c8ee4d3-00fb-49b5-9040-546e5c98ba1d');
+gidUrl.searchParams.set('api_key', api_key);
 let mainOrders, mainRoutes;
 let choiceGid, choiceOrder, choiceRoute;
 let choiceGidId = 0, choiceRouteId = 0, choiceOrderId = 0;
@@ -31,6 +32,7 @@ async function loadChoiseGid() {
 }
 
 function urlModified(addIdBool = false) {
+    //смена url на id заявки для удаления, или на все заявки для show, edit
     if (addIdBool)
         orderUrl.pathname += '/' + choiceOrderId;
     else orderUrl.pathname = '/api/orders';
@@ -79,6 +81,7 @@ function manageSubmitBtn() {
 }
 
 function showOrderHandler(action) {
+    //заполнение окна заявки
     let modalWindow = document.querySelector("#new-order");
     modalWindow.querySelector(".guide-name").innerText = choiceGid.name;
     modalWindow.querySelector(".route-name").innerText = choiceRoute.name;
@@ -103,6 +106,7 @@ function showOrderHandler(action) {
         duration = choiceOrder.duration + ' час';
     else duration = choiceOrder.duration + ' часа';
 
+    //заполение формы заявки в соотв с выбранной заявкой
     dateInput.value = choiceOrder.date;
     timeInput.value = choiceOrder.time;
     durationInput.value = duration;
@@ -110,8 +114,9 @@ function showOrderHandler(action) {
     optionFirstInput.checked = choiceOrder.optionFirst;
     optionSecondInput.checked = choiceOrder.optionSecond;
     priceInput.innerText = choiceOrder.price;
-    console.log(action);
+    // console.log(action);
 
+    //если показать, то выключаем поля
     if (action == 'show') {
         dateInput.classList.remove('form-control');
         timeInput.classList.remove('form-control');
@@ -126,6 +131,7 @@ function showOrderHandler(action) {
         personsInput.disabled = true;
         optionFirstInput.disabled = true;
         optionSecondInput.disabled = true;
+    //если редактирование, то включаем
     } else if (action == 'edit') {
         dateInput.classList.remove('form-control-plaintext');
         timeInput.classList.remove('form-control-plaintext');
@@ -142,23 +148,28 @@ function showOrderHandler(action) {
         optionSecondInput.disabled = false;
     }
 
-
+    //подсчёт цены
     updatePrice();
 }
 
 async function choiceOrderHandler(event) {
+    //если нажата не иконка, то выход
     if (event.target.tagName != 'I')
         return;
+    //сохранить id выбранного маршрута
     choiceOrderId = event.target.closest("tr").id;
+    //если удалить, то выход, так как требуется только id заявки
     if (event.target.dataset.action == 'delete')
         return;
 
+    //поиск информации по заявки, соотв ей маршрут, гид
     choiceOrder = mainOrders.find(order => order.id == choiceOrderId);
     choiceGidId = choiceOrder.guide_id;
     choiceRouteId = choiceOrder.route_id;
     choiceRoute = mainRoutes.find(route => route.id == choiceRouteId);
     await loadChoiseGid();
 
+    //подгрузить необходимое окно заявки
     showOrderHandler(event.target.dataset.action);
 }
 
@@ -183,6 +194,7 @@ function createNewTr(oneOrder, n) {
 }
 
 function updateOrderTable(page = 1) {
+    //обновление таблицы с заявками
     page = currentPage;
     let bodyTable = document.querySelector('.order-tbody');
     bodyTable.innerHTML = '';
@@ -296,8 +308,10 @@ let parsResponse;
 
 async function newOrderHandler(event) {
     personsExcursion = document.getElementById('persons-excursion');
+    //если поля выключены, то режим отображения, иначе редактирования
     let action = personsExcursion.classList.contains('form-control-plaintext') 
-        ? 'show' : 'edit'; //потому что ограничение на 80 символов. Это мало
+        ? 'show' : 'edit';
+    //если отображение, то отправлять ничего не надо
     if (action == 'show')
         return;
     let modalWindow = event.target.closest(".modal");
@@ -335,6 +349,7 @@ async function newOrderHandler(event) {
 }
 
 async function delHandler(event) {
+    //удаление заявки с сервера
     urlModified(true);
     let responseFromServer = await fetch(orderUrl, { method: 'DELETE' });
     let delId = await responseFromServer.json();
@@ -350,15 +365,19 @@ window.onload = async function () {
     await loadRoute();
     await loadOrder();
     makePagination(1);
+    //назначение обработчика пагинации
     let paginationList = document.querySelector(".pagination");
     paginationList.addEventListener("click", paginationHandler);
 
+    //обработчик для формы окна с заявкой
     let orderInput = document.querySelector(".new-order-form");
     orderInput.addEventListener("change", inputsOrderHandler);
 
+    //обработчки удаление заявки
     let delBtn = document.getElementsByClassName("del-order-btn")[0];
     delBtn.addEventListener("click", delHandler);
 
+    //обработчик отправки заявки на сервер
     let createOrderBtn = document.querySelector("button.create-new-order");
     createOrderBtn.addEventListener("click", newOrderHandler);
 };

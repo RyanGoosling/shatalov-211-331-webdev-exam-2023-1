@@ -4,25 +4,39 @@
 // 5. Тематические сувениры для посетителей. 
 // Стоимость увеличивается на 500 рублей для
 // каждого посетителя
+const api_key = '3c8ee4d3-00fb-49b5-9040-546e5c98ba1d';
 
 let urlRoute = new URL("http://exam-2023-1-api.std-900.ist.mospolytech.ru");
 urlRoute.pathname = '/api/routes';
-urlRoute.searchParams.set('api_key', '3c8ee4d3-00fb-49b5-9040-546e5c98ba1d');
+urlRoute.searchParams.set('api_key', api_key);
+
 let urlGid = new URL("http://exam-2023-1-api.std-900.ist.mospolytech.ru");
 urlGid.pathname = '/api/routes/{id-маршрута}/guides';
-urlGid.searchParams.set('api_key', '3c8ee4d3-00fb-49b5-9040-546e5c98ba1d');
+urlGid.searchParams.set('api_key', api_key);
+
 let urlOrder = new URL("http://exam-2023-1-api.std-900.ist.mospolytech.ru");
 urlOrder.pathname = '/api/orders';
-urlOrder.searchParams.set('api_key', '3c8ee4d3-00fb-49b5-9040-546e5c98ba1d');
-let mainRoutes, routes;
+urlOrder.searchParams.set('api_key', api_key);
+
+//mainRoutes - маршруты от сервера (не меняются)
+//routes - фильтруемый список маршрутов
+let mainRoutes, routes; 
+
 let currentPage = document.querySelector(".active").innerText;
 let divRouteTemplate = document.getElementById("div-template");
 let divGidTemplate = document.getElementById("div-gid-template");
-let choiceRouteId = 0, choiceGidId = 0;
+
+
+//mainGids - гиды от сервера (не меняются)
+//gids - фильтруемый список гидов
 let mainGids, gids;
+
+//сохранение выбранного маршрута и гида
 let choiceRoute, choiceGid;
+let choiceRouteId = 0, choiceGidId = 0;
 
 function manageOrderBtn(status = true) {
+    // включение/выключение кнопки
     let createOrderBtn = document.querySelector(".create-order-btn");
     if (status) {
         createOrderBtn.classList.remove("disabled");
@@ -37,32 +51,39 @@ function manageOrderBtn(status = true) {
 
 async function choiceGidHandler(event) {
     let divGid = event.target.closest("div");
+    //если выбран тот же самый гид, то сброс выбора, отключение кнопки заявки
     if (choiceGidId == divGid.id) {
         divGid.classList.remove("table-success");
         choiceGidId = 0;
         manageOrderBtn(false);
         return;
+    //если был выбор до этого
     } else if (choiceGidId != 0) {
         choiceGidElement = document.getElementById(choiceGidId);
+        //если гид есть в блоке с гидами, то сбросить выделение
         if (choiceGidElement != null)
             choiceGidElement.classList.remove("table-success");
+        //обновить выбор
         divGid.classList.add("table-success");
         choiceGidId = divGid.id;
+    //если выбор впервые, то просто выбрать
     } else {
         choiceGidId = divGid.id;
         divGid.classList.add("table-success");
     }
+    //включение кнопки заявки, тк выбран маршрут и гид
     manageOrderBtn(true);
 
     //url for choice guide
     let tempUrl = new URL('http://exam-2023-1-api.std-900.ist.mospolytech.ru');
     tempUrl.pathname = '/api/guides/' + choiceGidId;
-    tempUrl.searchParams.set('api_key', '3c8ee4d3-00fb-49b5-9040-546e5c98ba1d');
+    tempUrl.searchParams.set('api_key', api_key);
     let response = await fetch(tempUrl);
     choiceGid = await response.json();
 }
 
 function createNewGid(gid) {
+    //создание карточки гида
     let divGid = divGidTemplate.content.firstElementChild.cloneNode(true);
     divGid.id = gid.id;
     let name = divGid.querySelector(".name");
@@ -79,20 +100,23 @@ function createNewGid(gid) {
 }
 
 function updateGidTable(makeSelectBool = true) {
+    //Доступные гиды по маршруту ...
     document.querySelector("#gid-list > span").innerText = choiceRoute.name;
 
     let selectLang = document.querySelector(".search-lang");
 
+    //если не сделан выбор, то обновить фильтрацию языков
     if (makeSelectBool) {
         selectLang.innerHTML = '';
         let optionLang = document.createElement('option');
         optionLang.innerHTML = 'Не выбрано';
         selectLang.append(optionLang);
     }
-
+    //сброс гидов с сайта
     let bodyTable = document.querySelector('.gid-table');
     bodyTable.innerHTML = '';
     for (let i = 0; i < gids.length; i++) {
+        //добавление на стр гидов
         let divGid = createNewGid(gids[i]);
         bodyTable.append(divGid);
 
@@ -107,14 +131,17 @@ function updateGidTable(makeSelectBool = true) {
 }
 
 async function loadGid() {
+    //сбросить гидов, если сброшен выбор маршрута
     if (choiceRouteId == 0) {
         mainGids = [];
         gids = [];
     } else {
+        //загрузка выбранного маршрута
         urlGid.pathname = `/api/routes/${choiceRouteId}`;
         let response = await fetch(urlGid);
         choiceRoute = await response.json();
 
+        //загрузка гидов по маршруту
         urlGid.pathname += "/guides";
         response = await fetch(urlGid);
         let gidList = await response.json();
@@ -127,27 +154,36 @@ async function loadGid() {
 }
 
 function choiceRouteHandler(event) {
+    //обработчик выбора маршрута
     let divRoute = event.target.closest("div");
+    //если выбран тот же самый маршрут, то сбросить выбор
     if (choiceRouteId == divRoute.id) {
         divRoute.classList.remove("table-success");
         choiceRouteId = 0;
+    //если маршрут был до этого выбран
     } else if (choiceRouteId != 0) {
         let choiceRouteElement = document.getElementById(choiceRouteId);
+        //если выбранный маршрут на странице, то убрать выделение
         if (choiceRouteElement != null)
             choiceRouteElement.classList.remove("table-success");
+        //выделить и сохранить новый маршрут
         divRoute.classList.add("table-success");
         choiceRouteId = divRoute.id;
+    //если маршрут выбирается впервые, то просто выбрать
     } else {
         choiceRouteId = divRoute.id;
         divRoute.classList.add("table-success");
     }
+    //в соотв с выбором загрузить гидов по маршруту
     choiceGid = {};
     choiceGidId = 0;
-    manageOrderBtn(false);
     loadGid();
+    //выключить кнопку создания заявки
+    manageOrderBtn(false);
 }
 
 function createNewDiv(oneRoute) {
+    //создание блока маршрута
     let divRoute = divRouteTemplate.content.firstElementChild.cloneNode(true);
     divRoute.id = oneRoute.id;
     let name = divRoute.querySelector(".name");
@@ -162,7 +198,7 @@ function createNewDiv(oneRoute) {
     return divRoute;
 }
 
-//download main routes
+//загрузка маршрутов
 async function loadRoute() {
     let response = await fetch(urlRoute);
     let routeList = await response.json();
@@ -170,22 +206,28 @@ async function loadRoute() {
     routes = mainRoutes;
 }
 
+//обновление таблицы маршрутов на опр страницу
 function updateRouteTable(page) {
     let makeSelectBool = true;
     let selectObject = document.querySelector('.search-object');
-    if (selectObject.value != 'Не выбрано')
+    // выбор места сделан? Да - менять список мест не надо
+    if (selectObject.value != 'Не выбрано') 
         makeSelectBool = false;
 
     let bodyTable = document.querySelector('.route-table');
-    bodyTable.innerHTML = '';
+    bodyTable.innerHTML = ''; //сборс таблицы маршрутов
 
-    let start = (page - 1) * 10;
+    //определение индекса первого маршрута на page странице
+    let start = (page - 1) * 10; 
+    //если старт + 10 уходит за список, то выбирается конец списка
     let end = Math.min(routes.length, start + 10);
+    //добавление марщрутов на сайт от start до end индекса
     for (let i = start; i < end; i++) {
         let divRoute = createNewDiv(routes[i]);
         bodyTable.append(divRoute);
     }
 
+    //обработка выпадающего списка по главным местам, если место не выбрано
     if (makeSelectBool) {
         let selectObject = document.querySelector(".search-object");
         selectObject.innerHTML = "<option>Не выбрано</option>";
@@ -197,26 +239,39 @@ function updateRouteTable(page) {
         }
     }
 
+    //выделить зелённым выбранный маршрут, если он есть
     if (document.getElementById(choiceRouteId) != null)
         document.getElementById(choiceRouteId).classList.add("table-success");
 
 }
 
 function makePagination(openPage = '1') {
+    // у кнопки пагинации меняется только содержимое с учётом текущей страницы
+    // если страница до середины (1-3) или последние 3 (n-3, n), то сдвига нет
+    // иначе сдвиг на 1, при этом выбранная кнопка по середине
+    // на какую стр переключать определяется содержимым кнопки
+    // если страниц меньше 5, то лишние кнопки выключены
 
-    let activeBtn = document.querySelector(".active");
+    let activeBtn = document.querySelector(".active"); //выбранная страница
+    //кнопка в начало
     let startBtn = document.querySelector(".to-start").children[0];
+    //в конец
     let endBtn = document.querySelector(".to-end").children[0];
+    //кнопки пагинации
     let paginationBtns = document.querySelectorAll(".page-link");
 
-    let lastPage = (Math.ceil(routes.length / 5)).toString();
+    //расчёт последней страницы списка маршрутов
+    let lastPage = (Math.ceil(routes.length / 10)).toString();
+
     let start = Math.max(Number(openPage) - 2, 1);
     let end = Math.min(start + 4, Number(lastPage)); //Number(openPage) + 2
     let newActive = openPage;
 
+    //фикс бага неправильного отображения номеров страниц на посл стр
     if (end == lastPage && lastPage > 4)
         start = Number(lastPage) - 4;
 
+    //обработка кнопок в начало, в конец
     if (openPage == 'В начало') {
         start = 1;
         newActive = '1';
@@ -228,6 +283,7 @@ function makePagination(openPage = '1') {
         start = lastPage > 4 ? Number(lastPage) - 4 : 1;
     }
 
+    //Если на первой/последней странице, то В начало/В конец выключено
     startBtn.classList.remove("disabled");
     endBtn.classList.remove("disabled");
     if (newActive == '1') {
@@ -237,7 +293,7 @@ function makePagination(openPage = '1') {
         endBtn.classList.add("disabled");
     }
 
-
+    //смена чисел внутри кнопок
     for (let i = start, j = 1; i <= end; i++, j++) {
         if (i == newActive) {
             activeBtn.classList.remove("active");
@@ -246,6 +302,7 @@ function makePagination(openPage = '1') {
         paginationBtns[j].innerText = i.toString();
         paginationBtns[j].classList.remove("disabled");
     }
+    //выключение лишних кнопок, включение выключенных 
     if (end < 5)
         for (let i = end + 1; i <= 5; i++)
             paginationBtns[i].classList.add("disabled");
@@ -255,16 +312,19 @@ function makePagination(openPage = '1') {
 
     currentPage = newActive;
 
+    //обновить маршруты с учётом новой страницы 
     updateRouteTable(currentPage);
 }
 
 function paginationHandler(event) {
+    //если нажата не та область или кнопка выключена, то выбрасывает 
     if (event.target.tagName == 'UL') return;
     else if (event.target.tagName == 'LI') {
         if (event.target.children[0].classList.contains("disabled"))
             return;
     } else if (event.target.classList.contains("disabled")) return;
 
+    //обработать пагинацию по выбранной кнопке
     makePagination(event.target.innerText);
 }
 
@@ -273,6 +333,7 @@ function searchRouteHandler(event) {
     let searchName = document.querySelector('.search-name');
     let selectObject = document.querySelector('.search-object');
 
+    //если есть выбор в полях фильтрации, то фильтрация по содержимому поля
     if (searchName.value != '')
         routes = routes.filter(route =>
             route.name.toLowerCase().includes(searchName.value.toLowerCase()));
@@ -281,6 +342,7 @@ function searchRouteHandler(event) {
         routes = routes.filter(route =>
             route.mainObject.includes(selectObject.value));
 
+    //сброс на первую страницу
     makePagination('1');
 }
 
@@ -290,6 +352,7 @@ function searchGidHandler(event) {
     let expToGid = document.querySelector(".search-to");
     gids = mainGids;
 
+    //если есть выбор в полях фильтрации, то фильтрация по содержимому поля
     if (langGid.value != 'Не выбрано')
         gids = gids.filter(gid => gid.language.includes(langGid.value));
 
@@ -299,10 +362,13 @@ function searchGidHandler(event) {
     if (expToGid.value != '')
         gids = gids.filter(gid => gid.workExperience <= expToGid.value);
 
+    //обновить блок гидов по новому списку
     updateGidTable(false);
 }
 
 async function isThisDayOff(day) {
+    //запрос на стороний API с датой, который возвращает выходной ли день
+    //выходной - 1, рабочий - 0
     let urlDay = new URL('https://isdayoff.ru/');
     urlDay.pathname += day;
     let response = await fetch(urlDay);
@@ -311,12 +377,14 @@ async function isThisDayOff(day) {
 }
 
 async function updatePrice() {
+    //обновление цены в заявке
     let spanPrice = document.querySelector('.total-price');
-    // in duration: value = 'n час', value[0] = n
     let date = document.getElementById('date-excursion').value;
     let time = document.getElementById('time-excursion').value;
+    // in duration: value = 'n час', value[0] = n
     let duration = document.getElementById('duration-excursion').value[0];
     let persons = document.getElementById('persons-excursion').value;
+    //если опции выбраны, то сразу перевод в значение для подсчёта цены
     let optionFirst = document.getElementById('option-1').checked ? 0.85 : 1;
     let optionSecond = document.getElementById('option-2').checked ? 500 : 0;
 
@@ -328,14 +396,26 @@ async function updatePrice() {
     persons = persons < 5 ? 0 :
         persons < 10 ? 1000 : 1500;
 
-    console.log(duration, date, time, optionSecond, persons, optionFirst);
+    // console.log(duration, date, time, optionSecond, persons, optionFirst);
 
     let price = (choiceGid.pricePerHour * duration * date
         + time + optionSecond + persons) * optionFirst;
+    //изменение цены на подсчитанную стоимость 
     spanPrice.innerText = Math.round(price);
 }
+// ● date:
+// множитель для будней равен 1, 
+// для праздничных и выходных дней (сб, вс) – 1,5;
+// time:
+// с 9 до 12 часов, равна 400 рублей, 
+// начинаются с 20 до 23 часов, равна 1000 рублей, для остальных – 0;
+// ● persons:
+// ○ от 1 до 5 человек – 0 рублей,
+// ○ от 5 до 10 – 1000 рублей,
+// ○  иначе (от 10 до 20) – 1500 рублей.
 
 function manageSubmitBtn() {
+    //если поля верны по валидации, то разблокировать кнопку, иначе - выключена
     let formOrder = document.querySelector(".new-order-form");
     let submitBtn = document.querySelector("button.create-new-order");
     if (formOrder.checkValidity())
@@ -345,21 +425,33 @@ function manageSubmitBtn() {
 }
 
 function showNewOrderHandler(event) {
+    //при открытии окна заявки
+    //внесение в заявку информацию по маршруту и гиду
     event.target.querySelector(".guide-name").innerText = choiceGid.name;
     event.target.querySelector(".route-name").innerText = choiceRoute.name;
     event.target.querySelector("#guide-id").value = choiceGid.id;
     event.target.querySelector("#route-id").value = choiceRoute.id;
     //set min day for input:date
+    //установка минимульго дня с учётом сегодняшней даты
     let dateInput = document.getElementById('date-excursion');
     let minDay = new Date;
+    //преобразование в завтрашнюю дату
     minDay.setDate(minDay.getDate() + 1);
+    //смена минимальной даты в атрибуте поля на minDay формата
+    console.log(minDay, minDay.toJSON(), minDay.toJSON().slice(0, 10));
+    //Tue Jun 1 2023 12:24:00 GMT+0300 - изначальный формат Date
+    //Date.toJSON() - '2023-01-01T09:24:00.298Z'
+    //Date.toJSON().slice(0, 10) - '2023-01-01'
     dateInput.attributes.min.value = minDay.toJSON().slice(0, 10);
 
+    //обновить цену, проверить кнопку
     manageSubmitBtn();
     updatePrice();
 }
 
 function inputsOrderHandler(event) {
+    //при изменении в полях заявки проверить валидацию
+    //обновиь цену, если ошибок в валидации нет
     let formOrder = event.target.closest(".new-order-form");
     if (event.target.tagName == 'INPUT' || event.target.tagName == 'SELECT') {
         if (formOrder.checkValidity())
@@ -369,27 +461,17 @@ function inputsOrderHandler(event) {
 
 }
 
-// ● isThisDayOff – множитель, отвечающий за повышение стоимости в праздничные и
-// выходные дни. Для будней3 равен 1, 
-// для праздничных и выходных дней (сб, вс) – 1,5;
-// ● isItMorning – надбавка за раннее время экскурсии. 
-// Для экскурсий, которые начинаются
-// с 9 до 12 часов, равна 400 рублей, для остальных – 0;
-// ● isItEvening – надбавка за вечернее время экскурсии. Для экскурсий, которые
-// начинаются с 20 до 23 часов, равна 1000 рублей, для остальных – 0;
-// ● numberOfVisitors - надбавка за количество посетителей экскурсии:
-// ○ от 1 до 5 человек – 0 рублей,
-// ○ от 5 до 10 – 1000 рублей,
-// ○ от 10 до 20 – 1500 рублей.
-
 function alertOrder(response) {
+    //алерт ответ от сервера
     let sectionAlert = document.querySelector(".alerts");
     let alertTemplate = document.getElementById('alert-template');
     let divAlert = alertTemplate.content.firstElementChild.cloneNode(true);
     let textAlert = divAlert.querySelector(".alert-text");
+    //если нет ошибок, то зелённый с успехом
     if (response.error == null) {
         divAlert.classList.add("alert-success");
         textAlert.innerText += "Заявка успешно создана!";
+    //если ошибка, то выдать красный с текстом ошибки
     } else {
         divAlert.classList.add("alert-danger");
         textAlert.innerText += response.error;
@@ -399,7 +481,9 @@ function alertOrder(response) {
 
 let parsResponse;
 
+
 async function newOrderHandler(event) {
+    //сбор данных с окна заявки
     let modalWindow = event.target.closest(".modal");
     let formInputs = modalWindow.querySelector("form").elements;
     let route_id = formInputs["route_id"].value;
@@ -412,6 +496,7 @@ async function newOrderHandler(event) {
     let optionSecond = formInputs["optionSecond"].checked ? 1 : 0;
     let price = document.querySelector('.total-price').innerText;
 
+    //создание формы содержимого заявки для POST на API
     let orderData = new FormData();
     orderData.append('route_id', route_id);
     orderData.append('guide_id', guide_id);
@@ -423,10 +508,13 @@ async function newOrderHandler(event) {
     orderData.append('optionSecond', optionSecond);
     orderData.append('price', price);
 
+    //отправка заявки
     let response = await fetch(urlOrder, { method: 'POST', body: orderData });
     parsResponse = await response.json();
 
+    //сброс формы
     modalWindow.querySelector('form').reset();
+    //отобразить ответ от сервера
     alertOrder(parsResponse);
 }
 
@@ -434,14 +522,17 @@ async function newOrderHandler(event) {
 window.onload = async function () {
     await loadRoute();
     updateRouteTable(1);
+    //назначение обработчика кнопок пагинации
     let paginationList = document.querySelector(".pagination");
     paginationList.addEventListener("click", paginationHandler);
 
+    //назначение обработчика фильтрации маршрутов
     let searchName = document.querySelector(".search-name");
     let searchObject = document.querySelector(".search-object");
     searchName.addEventListener("input", searchRouteHandler);
     searchObject.addEventListener("change", searchRouteHandler);
 
+    //назначение обработчика фильтрации гидов
     let searchLanguage = document.querySelector(".search-lang");
     let searchExpFrom = document.querySelector(".search-from");
     let searchExpTo = document.querySelector(".search-to");
@@ -449,11 +540,13 @@ window.onload = async function () {
     searchExpFrom.addEventListener("input", searchGidHandler);
     searchExpTo.addEventListener("input", searchGidHandler);
 
+    //обработчикиотображение, изменения окна заявки
     let modalWindow = document.getElementById("new-order");
     let orderInput = document.querySelector(".new-order-form");
     modalWindow.addEventListener("show.bs.modal", showNewOrderHandler);
     orderInput.addEventListener("change", inputsOrderHandler);
 
+    //обработчик отправки заявки
     let createOrderBtn = document.querySelector("button.create-new-order");
     createOrderBtn.addEventListener("click", newOrderHandler);
 };
